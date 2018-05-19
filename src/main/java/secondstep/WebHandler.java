@@ -29,7 +29,8 @@ public class WebHandler {
 
 
     public static void main(String[] args) throws IOException {
-        updCarsInDB();
+        parse();
+        //updCarsInDB();
     }
 
     private static void updCarsInDB(){
@@ -274,6 +275,7 @@ public class WebHandler {
     private static ShockAbsorber buildShock (WebElement element){
         ShockAbsorber result = new ShockAbsorber();
         String dataDump = element.getText();
+      //  System.out.println(dataDump);
         /*String dataDump = "B8 5100 - Shock Absorber\n" +
                 "Part Number: 24-253161\n" +
                 "Series: B8 5100\n" +
@@ -284,6 +286,7 @@ public class WebHandler {
                 "Notes: -For Front Lifted Height: 0-1.5";*/
         //getting type and series
         String dataLines[]= dataDump.split("\n");
+
         String seriesType [] = dataLines[0].split(" - ");
         if (seriesType.length==2){
             result.setProductType(seriesType[1]);
@@ -308,8 +311,17 @@ public class WebHandler {
 
         //getting other parameters
         List<WebElement> searchResultLines = element.findElements(By.tagName("p"));
+
+        //if we have no notes attribute - we need to add +1 to counter
+        if  (!dataDump.contains("Notes")){
+            searchResultLines.add(element);
+        }
+        //System.out.println(searchResultLines.size());
         for (int i = 1; i < searchResultLines.size(); i++) {
+          //  System.out.println(searchResultLines.get(i).getText());
+          //  System.out.println(i+" - "+dataLines[i]);
             String data[] = dataLines[i].split(": ");
+          //  System.out.println(data.length);
             String attribute = data[0];
             switch(attribute){
                 case "Part Number": result.setPartNo(data[1]); break;
@@ -393,7 +405,7 @@ public class WebHandler {
                     else {
                         System.out.println("unknown shock attribute " + dataLines[i]);
                        // System.exit(0);
-                        throw   new IllegalArgumentException();
+                        throw  new IllegalArgumentException();
                     }
                 }
             }
@@ -428,24 +440,29 @@ public class WebHandler {
         WebElement detail = urls.get(1);
         result.setDetailsUrl(detail.getAttribute("href"));
 
-        //System.out.println(result);
+        System.out.println(result);
         return result;
     }
 
     public static void parse(){
-        List<String> dataLines = getDatalines();
+       // List<String> dataLines = getDatalines();
+        List<String> dataLines = new ArrayList<>();
+        String testLine = "2018;;3016511042220345684;;Chevrolet;;636264562659427950;;Colorado;;1969142120141209129;;LT;;4918739953723876718;;Drive;;4WD;;2983352193516030977";
+        dataLines.add(testLine);
         System.setProperty("webdriver.chrome.driver", "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
-        Session session = CarDao.getSession();
+      //  Session session = CarDao.getSession();
         String url;
         for (String dataLine : dataLines){
             url = buildUrl(dataLine);
+            System.out.println(url);
             driver.get(url);
             sleepTillReady(driver,url);
             WebElement searchResult = driver.findElement(By.id("ProductResults"));
             searchResult = searchResult.findElement(By.className("searchFeedback"));
             String carName = searchResult.getText();
             if (carName.contains("No Results")){
+                System.out.println("no results");
                 logCheckedData(dataLine,false);
             }
             else {
@@ -455,6 +472,7 @@ public class WebHandler {
                 List<ShockAbsorber> absorbers = new ArrayList<>();
                 WebElement searchResults = driver.findElement(By.className("searchList"));
                 List<WebElement> shocks = searchResults.findElements(By.xpath("//div[contains(@class, 'row backBox')]"));
+                System.out.println(shocks.size());
                 try {
                     for (WebElement shock: shocks){
                         absorbers.add(buildShock(shock));
@@ -467,11 +485,15 @@ public class WebHandler {
                 }
                 if (!car.hasProblems()){
                     car.setAbsorbers(absorbers);
-                    CarDao.saveCar(session,car);
+                    for (ShockAbsorber absorber: absorbers){
+                     //   System.out.println(absorber);
+                    }
+                 //   CarDao.saveCar(session,car);
                     logCheckedData(dataLine,true);
                 }
             }
         }
+        driver.close();
     }
 
     private static void logUnknnownData(String dataLine) {

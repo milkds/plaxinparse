@@ -1,13 +1,21 @@
 package secondstep;
 
 
+import keystone.KeyAdditionalPart;
+import keystone.KeyCar;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class CarDao {
     public static List<Car>getCars(){
@@ -66,14 +74,16 @@ public class CarDao {
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             Criteria criteria = session.createCriteria(ShockAbsorber.class);
-            criteria.setProjection(Projections.distinct(Projections.property("partNo")));
+            //criteria.setProjection(Projections.distinct(Projections.property("partNo")));
             shockAbsorbers=criteria.list();
+            //session.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         //HibernateUtil.shutdown();
         System.out.println(shockAbsorbers.size() + " is qty of shocks in database");
+        HibernateUtil.shutdown();
 
         return shockAbsorbers;
     }
@@ -115,7 +125,28 @@ public class CarDao {
         }*/
         List<ShockAbsorber> abs = new ArrayList<>();
         abs=getAbsorbers();
-        System.out.println(abs.size());
+
+        for (ShockAbsorber absorber : abs){
+            if  (absorber.getPartNo().equals("24-253147")){
+                System.out.println(absorber.getOtherNotes());
+            }
+        }
+        /*Set<String> absPartNo = new TreeSet<>();
+        for (ShockAbsorber absorber: abs){
+            absPartNo.add(absorber.getPartNo());
+        }
+
+        try(FileWriter fw = new FileWriter("F:\\My Java Projects\\plaxinparse\\src\\main\\java\\keystone\\log\\toparse", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw))
+        {
+           for (String partNo: absPartNo){
+               out.println(partNo);
+           }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
     }
 
     public static Car buildTestCar(){
@@ -156,6 +187,28 @@ public class CarDao {
             System.exit(0);
         }
 
+    }
+    public static int saveAdditional(Session session, KeyAdditionalPart part){
+        Transaction transaction = null;
+        try {
+            transaction = session.getTransaction();
+            transaction.begin();
+
+           session.save(part);
+            List<KeyCar> cars = part.getCars();
+            for (KeyCar car: cars){
+                session.persist(car);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
     public static Session getSession(){
         Session session = null;

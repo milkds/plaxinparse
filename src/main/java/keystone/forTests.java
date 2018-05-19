@@ -22,12 +22,61 @@ import java.util.List;
 public class forTests {
 
     public static void main(String[] args) throws IOException {
-        System.setProperty("webdriver.chrome.driver", "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\chromedriver.exe");
+        /*System.setProperty("webdriver.chrome.driver", "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.get("https://wwwsc.ekeystone.com/login?Logout=true&RedirectURL=/");
         driver.findElement(By.id("webcontent_0_txtUserName")).sendKeys("120704");
         driver.findElement(By.id("webcontent_0_txtPassword")).sendKeys("prim54-wrist");
         driver.findElement(By.name("webcontent_0$submit")).click();
+        bad_sleep(2000);*/
+
+        WebDriver driver = KeystoneUtil.initDriver();
+      //  driver.get("https://wwwsc.ekeystone.com/Search/Detail?pid=BLS24-239417");
+        driver.get("https://wwwsc.ekeystone.com/Search/Detail?pid=BLS24-256254");
+        bad_sleep(2000);
+
+        WebElement thisFits = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divThisFitsTab"));
+        thisFits.click();
+        bad_sleep(2000);
+        WebElement fitsTab = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divTabContainer"));
+        WebElement firstResult = fitsTab.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_aApplicationSummary_0"));
+        firstResult.click();
+        bad_sleep(2000);
+        WebElement openCars = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_divRepeater_0"));
+        List<WebElement> elements = openCars.findElements(By.className("applicationBlock"));
+        System.out.println(elements.size());
+        for (WebElement car : elements){
+            WebElement attribute = car.findElement(By.className("applicationAttributeName"));
+            WebElement attributeValue = car.findElement(By.className("applicationRequiredProducts"));
+            System.out.println(attribute.getText());
+            System.out.println(attributeValue.getText());
+            System.out.println();
+        }
+        //System.out.println(fitsTab.getText());
+
+      //  List<WebElement> elements = driver.findElements(By.className("productAttribute"));
+       // List<WebElement> elements = driver.findElements(By.className("thslide_list_frame"));
+        /*List<WebElement> elements = driver.findElements(By.id("partImage"));
+        System.out.println(elements.size());
+        String valueFormat = "webcontent_0_row2_0_productDetailTabs_rptrAttributes_lblAttributeValue_";
+        int counter = 0;
+        for (WebElement element: elements){
+           *//* System.out.println(counter++);
+          //  WebElement attributeName  = element.findElement(By.className("attributeName"));
+
+            String attributeValueId = valueFormat+counter;
+            WebElement attributeValue  = element.findElement(By.id(attributeValueId));
+            System.out.println(attributeValue.getText());
+            System.out.println();
+            counter++;*//*
+
+           WebElement url = element.findElement(By.tagName("img"));
+            System.out.println(url.getAttribute("src"));
+            System.out.println();
+        }*/
+
+        driver.close();
+
        /* List<WebElement> elements = driver.findElements(By.name("webcontent_0$submit"));
         System.out.println(elements.size());*/
      //   driver.get("https://wwwsc.ekeystone.com/");
@@ -36,6 +85,53 @@ public class forTests {
         //webcontent_0_txtUserName*/
     }
 
+
+
+    private static void getImgUrls(WebDriver driver){
+        List<WebElement> elements = driver.findElements(By.className("thslide_list_frame"));
+        for (WebElement element: elements){
+            WebElement url = element.findElement(By.tagName("a"));
+            System.out.println(url.getAttribute("href"));
+            System.out.println();
+        }
+    }
+    private static void getThisFits(WebDriver driver){
+        WebElement thisFits = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divThisFitsTab"));
+        thisFits.click();
+        bad_sleep(2000);
+        WebElement fitsTab = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divTabContainer"));
+        WebElement firstResult = fitsTab.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_aApplicationSummary_0"));
+        firstResult.click();
+        bad_sleep(2000);
+        WebElement openCars = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_divRepeater_0"));
+        List<WebElement> elements = openCars.findElements(By.className("applicationVehicleLink"));
+        System.out.println(elements.size());
+        for (WebElement car : elements){
+            WebElement attribute = car.findElement(By.className("applicationAttributeValue"));
+            System.out.println(attribute.getText());
+            System.out.println();
+        }
+    }
+
+    private static void getThisFitsAttributes(WebDriver driver){
+        WebElement thisFits = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divThisFitsTab"));
+        thisFits.click();
+        bad_sleep(2000);
+        WebElement fitsTab = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_divTabContainer"));
+        WebElement firstResult = fitsTab.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_aApplicationSummary_0"));
+        firstResult.click();
+        bad_sleep(2000);
+        WebElement openCars = driver.findElement(By.id("webcontent_0_row2_0_productDetailTabs_rptrApplicationSummary_divRepeater_0"));
+        List<WebElement> elements = openCars.findElements(By.className("applicationBlock"));
+        System.out.println(elements.size());
+        for (WebElement car : elements){
+            WebElement attribute = car.findElement(By.className("applicationAttributeName"));
+            WebElement attributeValue = car.findElement(By.className("applicationRequiredProducts"));
+            System.out.println(attribute.getText());
+            System.out.println(attributeValue.getText());
+            System.out.println();
+        }
+    }
 
     private static void codeDump() throws IOException {
         String loginUrl = "https://wwwsc.ekeystone.com/Login?Logout=true";
@@ -59,4 +155,12 @@ public class forTests {
         System.out.println(theString);
         client.close();
     }
+
+    public static void bad_sleep(int delay) {
+        try {
+            Thread.sleep(delay);
+        } catch (Exception e) {
+        }
+    }
+
 }

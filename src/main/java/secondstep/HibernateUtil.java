@@ -1,5 +1,8 @@
 package secondstep;
 
+import keystone.KeyAdditionalPart;
+import keystone.KeyCar;
+import keystone.KeyShock;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
@@ -34,6 +37,9 @@ public class HibernateUtil {
                 MetadataSources sources = new MetadataSources(registry);
                 sources.addAnnotatedClass(Car.class);
                 sources.addAnnotatedClass(ShockAbsorber.class);
+                sources.addAnnotatedClass(KeyAdditionalPart.class);
+                sources.addAnnotatedClass(KeyCar.class);
+                sources.addAnnotatedClass(KeyShock.class);
 
                 Metadata metadata = sources.getMetadataBuilder().build();
 
@@ -54,4 +60,6 @@ public class HibernateUtil {
             StandardServiceRegistryBuilder.destroy(registry);
         }
     }
+
+
 }
