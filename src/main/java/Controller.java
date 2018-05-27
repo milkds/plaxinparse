@@ -18,10 +18,9 @@ public class Controller {
 
     public static void main(String[] args) throws IOException {
     String stopString = "1974;;9191152257727449994;;International;;7666425734810545164;;Scout II;;5561292135176590932;;Base;;7772828447578431571";
-        //testSelenium();
-        //checkButton();
-    //  SeleniumService.getDataforSearch(1974,1900);
-           SeleniumService.getDataforSearchFromStop(1974,1900, stopString);
+   // SeleniumService.getDataforSearchFromStop(1974,1900, stopString);
+        SeleniumService.initDriver();
+        //  SeleniumService.getDataforSearch(1974,1900);
         //Service.checkParseConsistency(2019);
       //  Service.removeYear("2017");
     }
