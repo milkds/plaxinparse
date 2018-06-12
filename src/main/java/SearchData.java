@@ -6,9 +6,6 @@ public class SearchData {
     private String makeValue;
     private String modelText;
     private String modelValue;
-
-
-
     private String submodelText;
     private String submodelValue;
 

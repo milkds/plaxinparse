@@ -65,6 +65,11 @@ public class ShockAbsorber {
     @Column(name = "OTHER_NOTES")
     private String otherNotes;
 
+    @Column(name = "LIFT_START")
+    private String liftStart;
+
+    @Column(name = "LIFT_FINISH")
+    private String liftFinish;
 
 
     public String getSeries() {
@@ -233,5 +238,21 @@ public class ShockAbsorber {
                 ", imgUrl='" + imgUrl + '\'' +
                 ", detailsUrl='" + detailsUrl + '\'' +
                 '}';
+    }
+
+    public String getLiftStart() {
+        return liftStart;
+    }
+
+    public void setLiftStart(String liftStart) {
+        this.liftStart = liftStart;
+    }
+
+    public String getLiftFinish() {
+        return liftFinish;
+    }
+
+    public void setLiftFinish(String liftFinish) {
+        this.liftFinish = liftFinish;
     }
 }

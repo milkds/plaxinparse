@@ -30,6 +30,7 @@ public class Controller {
       //  testSelenium();
     }
 
+
     private static String getPage() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("https://cart.bilsteinus.com/API/Exchange/FYVService/GetMakes?id=");
