@@ -17,12 +17,17 @@ import java.util.List;
 public class Controller {
 
     public static void main(String[] args) throws IOException {
-    String stopString = "1974;;9191152257727449994;;International;;7666425734810545164;;Scout II;;5561292135176590932;;Base;;7772828447578431571";
-   // SeleniumService.getDataforSearchFromStop(1974,1900, stopString);
-        SeleniumService.initDriver();
-        //  SeleniumService.getDataforSearch(1974,1900);
-        //Service.checkParseConsistency(2019);
+    String stopString = "1993;;480154208950490439;;Chevrolet;;636264562659427950;;Camaro;;1937232241709715798;;Z28;;9013643089022421650";
+    //SeleniumService.getDataforSearchFromStop(1993,1900, stopString);
+     WebDriver driver =  SeleniumService.initDriver();
+      //   SeleniumService.getDataforSearch(2000,1900);
+       // Service.checkParseConsistency(2019,driver);
+        for (int i = 2018; i >1900 ; i--) {
+            Service.checkParseConsistency(i,driver);
+        }
+       // driver.close();
       //  Service.removeYear("2017");
+      //  testSelenium();
     }
 
     private static String getPage() throws IOException {
@@ -36,19 +41,26 @@ public class Controller {
     }
 
     private static void testSelenium(){
-        System.setProperty("webdriver.chrome.driver", "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://cart.bilsteinus.com");
+        WebDriver driver = SeleniumService.initDriver();
         WebElement drop_down = driver.findElement(By.id("engineSelector-year"));
         Select se = new Select(drop_down);
         List<WebElement> options = se.getOptions();
+
         for (int i = 1; i < options.size()-5; i++) {
             WebElement year = options.get(i);
+            System.out.println(year.getText());
             se.selectByIndex(i);
-            Controller.bad_sleep(2000);
+           // bad_sleep(1000);
+
+
             WebElement drop_down2 = driver.findElement(By.id("engineSelector-make"));
             Select se2 = new Select(drop_down2);
             List<WebElement> options2 = se2.getOptions();
+            for (int j = 0; j < 100; j++) {
+                System.out.println(options2.size());
+                bad_sleep(5);
+                options2 = se2.getOptions();
+            }
             List<SearchData> yearMakes = new ArrayList<>();
             for (int j = 1; j < options2.size(); j++) {
                 WebElement make = options2.get(j);
@@ -59,7 +71,7 @@ public class Controller {
                 data.setMakeValue(make.getAttribute("value"));
                 yearMakes.add(data);
             }
-            Service.saveYearMakes(yearMakes,year.getText());
+          //  Service.saveYearMakes(yearMakes,year.getText());
         }
         driver.close();
     }

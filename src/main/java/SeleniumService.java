@@ -11,6 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 public class SeleniumService {
 
+    private static List<WebElement> waitForSelect(Select select){
+        List<WebElement> options = select.getOptions();
+        while (options.size()<2){
+            Controller.bad_sleep(50);
+            options = select.getOptions();
+        }
+
+        return options;
+    }
     private static void getYearMakeModels(WebDriver driver, /*SearchData data,*/ int startYear, int finishYear, int[] startData) {
         WebElement yearDrop = driver.findElement(By.id("engineSelector-year"));
         Select yearSelect = new Select(yearDrop);
@@ -27,10 +36,11 @@ public class SeleniumService {
                 }
             }
             yearSelect.selectByVisibleText(i + "");
-            Controller.bad_sleep(500);
+           // Controller.bad_sleep(500);
             WebElement makeDrop = driver.findElement(By.id("engineSelector-make"));
             Select makeSelect = new Select(makeDrop);
-            List<WebElement> makes = makeSelect.getOptions();
+          //  List<WebElement> makes = makeSelect.getOptions();
+            List<WebElement> makes = waitForSelect(makeSelect);
             int makeID = 1;
             if (startData.length > 0) {
                 makeID = startData[1];
@@ -39,10 +49,11 @@ public class SeleniumService {
             for (int j = makeID; j < makes.size(); j++) {
                 WebElement make = makes.get(j);
                 makeSelect.selectByIndex(j);
-                Controller.bad_sleep(500);
+               // Controller.bad_sleep(500);
                 WebElement modelDrop = driver.findElement(By.id("engineSelector-model"));
                 Select modelSelect = new Select(modelDrop);
-                List<WebElement> models = modelSelect.getOptions();
+               // List<WebElement> models = modelSelect.getOptions();
+                List<WebElement> models = waitForSelect(modelSelect);
                 //save models here
                 List<SearchData> modelDataForSave = new ArrayList<>();
                 int modelID = 1;
@@ -68,10 +79,11 @@ public class SeleniumService {
                 for (int k = modelID; k < models.size(); k++) {
                     WebElement model = models.get(k);
                     modelSelect.selectByIndex(k);
-                    Controller.bad_sleep(500);
+                   // Controller.bad_sleep(500);
                     WebElement submodelDrop = driver.findElement(By.id("engineSelector-submodel"));
                     Select submodelSelect = new Select(submodelDrop);
-                    List<WebElement> sumodels = submodelSelect.getOptions();
+                   // List<WebElement> sumodels = submodelSelect.getOptions();
+                    List<WebElement> sumodels = waitForSelect(submodelSelect);
                     List<SearchData> submodelDataForSave = new ArrayList<>();
                     int submodelID = 1;
                     if (startData.length > 0) {
@@ -94,7 +106,7 @@ public class SeleniumService {
 
                     for (int l = submodelID; l < sumodels.size(); l++) {
                         submodelSelect.selectByIndex(l);
-                        Controller.bad_sleep(500);
+                      //  Controller.bad_sleep(500);
                         SearchData dataWithModel = new SearchData();
                         dataWithModel.setYearText(year.getText());
                         dataWithModel.setYearValue(year.getAttribute("value"));
@@ -166,7 +178,8 @@ public class SeleniumService {
         try {
             WebElement drop = driver.findElement(By.id("inlineDrop-" + dropNumber));
             Select dropSelect = new Select(drop);
-            List<WebElement> dropOptions = dropSelect.getOptions();
+          //  List<WebElement> dropOptions = dropSelect.getOptions();
+            List<WebElement> dropOptions = waitForSelect(dropSelect);
             String dropName = dropOptions.get(0).getText();
             int dropID = 1;
             if (startData.length > 0) {
@@ -485,4 +498,9 @@ public class SeleniumService {
        // driver.close();
     }
 
+    public static void waitTillReadyByID(WebDriver driver, String ID){
+        while (driver.findElements(By.id(ID)).size()==0){
+            Controller.bad_sleep(50);
+        }
+    }
 }

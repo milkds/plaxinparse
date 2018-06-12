@@ -13,10 +13,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Service {
-    private static final String YEAR_MAKE_PATH = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\final_files\\year_make";
-    private static final String YEAR_MAKE_MODEL_PATH = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\final_files\\year_make_model";
-    private static final String YEAR_MAKE_MODEL_SUB_PATH = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\final_files\\year_make_model_sub";
-    private static final String DATA_FOR_SEARCH = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\final_files\\allinfo";
+    private static final String YEAR_MAKE_PATH = "src\\main\\resources\\year_make";
+    private static final String YEAR_MAKE_MODEL_PATH = "src\\main\\resources\\year_make_model";
+    private static final String YEAR_MAKE_MODEL_SUB_PATH = "src\\main\\resources\\year_make_model_sub";
+    private static final String DATA_FOR_SEARCH = "src\\main\\resources\\dataForSearch";
 
     public static void saveYearMakes(List<SearchData> yearMakes, String year){
         try(FileWriter fw = new FileWriter(YEAR_MAKE_PATH, true);
@@ -327,6 +327,7 @@ public class Service {
 
 
     public static void main(String[] args) {
-        checkForDupes();
+        testYearMakes();
+        //checkForDupes();
     }
 }

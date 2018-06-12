@@ -21,11 +21,11 @@ import java.util.Map;
 
 public class WebHandler {
     private static final String MAIN_URL_FORMAT = "https://cart.bilsteinus.com/results?yearid=%s&makeid=%s&modelid=%s&submodelid=%s";
-    private static final String DATA_FOR_SEARCH = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\second_step_files\\allinfo";
-    private static final String DATA_FOR_REPARSE = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\second_step_files\\reparse";
-    private static final String NO_RESULT = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\second_step_files\\noResult";
-    private static final String WITH_RESULT = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\second_step_files\\withResult";
-    private static final String TO_CHECK = "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\second_step_files\\resultsToCheck";
+    private static final String DATA_FOR_SEARCH = "src\\main\\resources\\second_step_files\\allinfo";
+    private static final String DATA_FOR_REPARSE = "src\\main\\resources\\second_step_files\\reparse";
+    private static final String NO_RESULT = "src\\main\\resources\\second_step_files\\noResult";
+    private static final String WITH_RESULT = "src\\main\\resources\\second_step_files\\withResult";
+    private static final String TO_CHECK = "src\\main\\resources\\second_step_files\\resultsToCheck";
 
 
     public static void main(String[] args) throws IOException {
@@ -229,7 +229,7 @@ public class WebHandler {
         List<String> withResult;
         List<String> withProblems;
         try {
-            result = Files.readAllLines(Paths.get(DATA_FOR_REPARSE));
+            result = Files.readAllLines(Paths.get(DATA_FOR_SEARCH));
             noResult = Files.readAllLines(Paths.get(NO_RESULT));
             withResult = Files.readAllLines(Paths.get(WITH_RESULT));
             withProblems = Files.readAllLines(Paths.get(TO_CHECK));
@@ -440,22 +440,24 @@ public class WebHandler {
         WebElement detail = urls.get(1);
         result.setDetailsUrl(detail.getAttribute("href"));
 
-        System.out.println(result);
         return result;
     }
 
     public static void parse(){
-       // List<String> dataLines = getDatalines();
-        List<String> dataLines = new ArrayList<>();
-        String testLine = "2018;;3016511042220345684;;Chevrolet;;636264562659427950;;Colorado;;1969142120141209129;;LT;;4918739953723876718;;Drive;;4WD;;2983352193516030977";
-        dataLines.add(testLine);
-        System.setProperty("webdriver.chrome.driver", "F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\chromedriver.exe");
+        List<String> dataLines = getDatalines();
+        System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\chromedriver.exe");
+        int counter = 0;
         WebDriver driver = new ChromeDriver();
-      //  Session session = CarDao.getSession();
+        Session session = CarDao.getSession();
         String url;
         for (String dataLine : dataLines){
+            if (counter==100){
+                driver.close();
+                bad_sleep(10000);
+                driver = new ChromeDriver();
+                counter=0;
+            }
             url = buildUrl(dataLine);
-            System.out.println(url);
             driver.get(url);
             sleepTillReady(driver,url);
             WebElement searchResult = driver.findElement(By.id("ProductResults"));
@@ -466,13 +468,14 @@ public class WebHandler {
                 logCheckedData(dataLine,false);
             }
             else {
-                carName = StringUtils.substringBetween(carName, "'", "'");
+               // carName = StringUtils.substringBetween(carName, "'", "'");
+                carName = getCarName(carName);
+                System.out.println(carName);
                 Car car = new Car();
                 car.setCarFullName(carName);
                 List<ShockAbsorber> absorbers = new ArrayList<>();
                 WebElement searchResults = driver.findElement(By.className("searchList"));
                 List<WebElement> shocks = searchResults.findElements(By.xpath("//div[contains(@class, 'row backBox')]"));
-                System.out.println(shocks.size());
                 try {
                     for (WebElement shock: shocks){
                         absorbers.add(buildShock(shock));
@@ -485,11 +488,9 @@ public class WebHandler {
                 }
                 if (!car.hasProblems()){
                     car.setAbsorbers(absorbers);
-                    for (ShockAbsorber absorber: absorbers){
-                     //   System.out.println(absorber);
-                    }
-                 //   CarDao.saveCar(session,car);
+                    CarDao.saveCar(session,car);
                     logCheckedData(dataLine,true);
+                    counter++;
                 }
             }
         }
@@ -813,5 +814,16 @@ public class WebHandler {
             CarDao.updateCar(session, carFullName,carID);
         }
         session.close();
+    }
+
+    private static String  getCarName(String dataLine){
+        String split[] = dataLine.split("'");
+       StringBuilder carName = new StringBuilder();
+        carName.append(split[1]);
+        if (split.length==3){
+            carName.append("'");
+            carName.append(split[2]);
+        }
+        return carName.toString();
     }
 }

@@ -3,6 +3,7 @@ package secondstep;
 
 import keystone.KeyAdditionalPart;
 import keystone.KeyCar;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -88,64 +89,7 @@ public class CarDao {
         return shockAbsorbers;
     }
     public static void main(String[] args) {
-       /* Session session = null;
-        Transaction transaction = null;
-        List<ShockAbsorber> absorbers = new ArrayList<>();
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            Criteria criteria = session.createCriteria(ShockAbsorber.class);
-           // criteria.setProjection(Projections.distinct(Projections.property("partNo")));
-            absorbers=criteria.list();
-          *//*  transaction = session.getTransaction();
-            transaction.begin();*//*
-
-            *//*Car car = buildTestCar();
-            int id = (Integer)session.save(car);
-            List<ShockAbsorber> absorbers = car.getAbsorbers();
-            for (ShockAbsorber absorber: absorbers){
-                absorber.setCarID(id);
-                session.persist(absorber);
-            }*//*
-
-            //transaction.commit();
-        } catch (Exception e) {
-            *//*if (transaction != null) {
-                transaction.rollback();
-            }*//*
-            e.printStackTrace();
-//        } finally {
-//            if (session != null) {
-//                session.close();
-//            }
-        }
-
-        HibernateUtil.shutdown();
-        for (ShockAbsorber absorber: absorbers){
-            System.out.println(absorber.getDetailsUrl());
-        }*/
-        List<ShockAbsorber> abs = new ArrayList<>();
-        abs=getAbsorbers();
-
-        for (ShockAbsorber absorber : abs){
-            if  (absorber.getPartNo().equals("24-253147")){
-                System.out.println(absorber.getOtherNotes());
-            }
-        }
-        /*Set<String> absPartNo = new TreeSet<>();
-        for (ShockAbsorber absorber: abs){
-            absPartNo.add(absorber.getPartNo());
-        }
-
-        try(FileWriter fw = new FileWriter("F:\\My Java Projects\\plaxinparse\\src\\main\\java\\keystone\\log\\toparse", true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter out = new PrintWriter(bw))
-        {
-           for (String partNo: absPartNo){
-               out.println(partNo);
-           }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+      processLifts();
 
     }
 
@@ -229,5 +173,19 @@ public class CarDao {
         car.setCarFullName(carFullName);
         session.update(car);
         transaction.commit();
+    }
+
+    public static void processLifts(){
+        List<ShockAbsorber> absorbers = getAbsorbers();
+
+
+        for (ShockAbsorber absorber: absorbers) {
+            String notes = absorber.getNotes();
+            if (notes != null) {
+                if (notes.contains("Rear Lift") && notes.contains("Front Lift")) {
+                    String position = absorber.getPosition();;
+                }
+            }
+        }
     }
 }
