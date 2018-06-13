@@ -210,7 +210,8 @@ public class CarDao {
                        absorber.setLiftFinish(split[1]);
                    }
                    else {
-
+                       absorber.setLiftStart(split[0]);
+                       absorber.setLiftFinish(split[0]);
                    }
                    updateShock(session,absorber);
                 }
@@ -224,7 +225,8 @@ public class CarDao {
                         absorber.setLiftFinish(split[1]);
                     }
                     else {
-
+                        absorber.setLiftStart(split[0]);
+                        absorber.setLiftFinish(split[0]);
                     }
                     updateShock(session,absorber);
                 }
@@ -238,7 +240,8 @@ public class CarDao {
                         absorber.setLiftFinish(split[1]);
                     }
                     else {
-
+                        absorber.setLiftStart(split[0]);
+                        absorber.setLiftFinish(split[0]);
                     }
                     updateShock(session,absorber);
                 }
