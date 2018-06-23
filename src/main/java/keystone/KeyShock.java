@@ -72,6 +72,9 @@ public class KeyShock {
     @Column(name = "ROD_MATERIAL")
     private String rodMaterial;
 
+    @Column(name = "SHOCK_NOTES")
+    private String shockNotes;
+
 
 
     @Transient
@@ -282,5 +285,13 @@ public class KeyShock {
                 ", rodMaterial='" + rodMaterial + '\'' +
                 ", cars=" + cars +
                 '}';
+    }
+
+    public String getShockNotes() {
+        return shockNotes;
+    }
+
+    public void setShockNotes(String shockNotes) {
+        this.shockNotes = shockNotes;
     }
 }

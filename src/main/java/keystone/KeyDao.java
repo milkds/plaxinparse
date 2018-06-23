@@ -66,7 +66,7 @@ public class KeyDao {
 
         return 0;
     }
-    public static int updateShock(Session session, KeyAdditionalPart shock) {
+    public static int updateShock(Session session, KeyShock shock) {
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();

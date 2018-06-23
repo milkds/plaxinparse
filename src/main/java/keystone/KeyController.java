@@ -12,7 +12,7 @@ public class KeyController {
 
 
     public static void main(String[] args) {
-        updateJeep();
+
 
       /*  String partLine = KeystoneUtil.getPartLine(driver, "10-255612");
         KeystoneUtil.processResult(partLine, "10-255612", driver, session);*/
@@ -24,6 +24,107 @@ public class KeyController {
         KeystoneUtil.processResult(partLine, "24-239417", driver, session);*/
 
     }
+
+    private static void groupNotes(){
+        Session session = KeyDao.getSession();
+        List<KeyShock> shocks = KeyDao.getShocks(session);
+        for (KeyShock shock : shocks){
+            StringBuilder rawNotes = new StringBuilder();
+            String intDesign = shock.getInternalDesign();
+            String adjustable = shock.getAdjustable();
+            String wReserv = shock.getWithReservoir();
+            String inclDustShield = shock.getIncludesDustShield();
+            String inclHardware = shock.getIncludesHardware();
+            String inclBoot = shock.getIncludesBoot();
+            String qty = shock.getQuantity();
+            String rodDiam = shock.getRodDiameter();
+            String bodyMat = shock.getBodyMaterial();
+            String rodFinish = shock.getRodFinish();
+            String valvType = shock.getValvingType();
+            String rodMat = shock.getRodMaterial();
+
+            rawNotes.append("Internal Design :");
+            if (intDesign!=null){
+                rawNotes.append(" ");
+                rawNotes.append(intDesign);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Adjustable :");
+            if (adjustable!=null){
+                rawNotes.append(" ");
+                rawNotes.append(adjustable);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("With Reservoir :");
+            if (wReserv!=null){
+                rawNotes.append(" ");
+                rawNotes.append(wReserv);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Includes Dust Shield :");
+            if (inclDustShield!=null){
+                rawNotes.append(" ");
+                rawNotes.append(inclDustShield);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Includes Hardware :");
+            if (inclHardware!=null){
+                rawNotes.append(" ");
+                rawNotes.append(inclHardware);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Includes Boot :");
+            if (inclBoot!=null){
+                rawNotes.append(" ");
+                rawNotes.append(inclBoot);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Quantity :");
+            if (qty!=null){
+                rawNotes.append(" ");
+                rawNotes.append(qty);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Rod Diameter :");
+            if (rodDiam!=null){
+                rawNotes.append(" ");
+                rawNotes.append(rodDiam);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Body Material :");
+            if (bodyMat!=null){
+                rawNotes.append(" ");
+                rawNotes.append(bodyMat);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Rod Finish :");
+            if (rodFinish!=null){
+                rawNotes.append(" ");
+                rawNotes.append(rodFinish);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Valving Type :");
+            if (valvType!=null){
+                rawNotes.append(" ");
+                rawNotes.append(valvType);
+            }
+            rawNotes.append("\n");
+            rawNotes.append("Rod Material :");
+            if (rodMat!=null){
+                rawNotes.append(" ");
+                rawNotes.append(rodMat);
+            }
+            shock.setShockNotes(rawNotes.toString());
+            KeyDao.updateShock(session,shock);
+        }
+        HibernateUtil.shutdown();
+        System.out.println("thats all");
+    }
+
+    //INTERNAL_DESIGN ADJUSTABLE BODY_COLOR
+    // WITH_RESERVOIR INCLUDES_DUST_SHIELD INCLUDES_HARDWARE INCLUDES_BOOT QUANTITY
+    // ROD_DIAMETER BODY_MATERIAL ROD_FINISH VALVING_TYPE ROD_MATERIAL
+
 
     private static void updateJeep(){
         Session session = KeyDao.getSession();
@@ -135,7 +236,7 @@ public class KeyController {
                     imgUrl = KeystoneUtil.processImgUrl(imgUrl);
                     KeyAdditionalPart additionalPartToUpd = additionalPartMap.get(partNo);
                     additionalPartToUpd.setImgUrls(imgUrl);
-                    KeyDao.updateShock(session,additionalPartToUpd);
+                    //KeyDao.updateShock(session,additionalPartToUpd);
                     KeystoneUtil.logResult(partNo,KeystoneUtil.WITH_RESULT);
                 }
                 counter++;
