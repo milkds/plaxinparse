@@ -62,10 +62,13 @@ public class KeyController {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
-            String partNo;
+            String partNo=null;
             String bodyThickness=null;
             Cell cell = cellIterator.next();
-            partNo = cell.getStringCellValue();
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING: partNo=cell.getStringCellValue(); break;
+                case Cell.CELL_TYPE_NUMERIC: partNo=cell.getNumericCellValue()+""; break;
+            }
             if (cellIterator.hasNext()){
                 cell = cellIterator.next();
                 bodyThickness = cell.getStringCellValue();
