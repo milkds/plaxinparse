@@ -1,3 +1,5 @@
+package firststep;
+
 public class SearchData {
 
     private String yearText;
@@ -89,7 +91,7 @@ public class SearchData {
 
     @Override
     public String toString() {
-        return "SearchData{" +
+        return "firststep.SearchData{" +
                 "yearText='" + yearText + '\'' +
                 ", makeText='" + makeText + '\'' +
                 ", modelText='" + modelText + '\'' +

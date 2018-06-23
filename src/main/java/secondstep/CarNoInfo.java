@@ -4,9 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "cars")
-public class Car {
-
+@Table(name = "cars2")
+public class CarNoInfo {
     @Column(name = "CAR_FULL_NAME")
     private String carFullName;
 
@@ -47,9 +46,6 @@ public class Car {
 
     @Column(name = "CAR_TRANSMISSION")
     private String transmission;
-
-    @Column(name = "CAR_NOTES")
-    private String carNotes;
 
     @Transient
     private List<ShockAbsorber> absorbers;
@@ -180,8 +176,9 @@ public class Car {
 
     @Override
     public String toString() {
-        return "Car{" +
-                "id=" + id +
+        return "CarNoInfo{" +
+                "carFullName='" + carFullName + '\'' +
+                ", id=" + id +
                 ", modelYear='" + modelYear + '\'' +
                 ", make='" + make + '\'' +
                 ", model='" + model + '\'' +
@@ -193,14 +190,8 @@ public class Car {
                 ", engine='" + engine + '\'' +
                 ", doors='" + doors + '\'' +
                 ", transmission='" + transmission + '\'' +
+                ", absorbers=" + absorbers +
+                ", hasProblems=" + hasProblems +
                 '}';
-    }
-
-    public String getCarNotes() {
-        return carNotes;
-    }
-
-    public void setCarNotes(String carNotes) {
-        this.carNotes = carNotes;
     }
 }

@@ -1,3 +1,5 @@
+package firststep;
+
 import org.openqa.selenium.WebDriver;
 
 import java.io.BufferedWriter;

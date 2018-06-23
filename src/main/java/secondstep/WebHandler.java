@@ -29,8 +29,180 @@ public class WebHandler {
 
 
     public static void main(String[] args) throws IOException {
-        parse();
-        //updCarsInDB();
+        addCarNotes();
+    }
+
+    private static void addCarNotes(){
+        Session session = CarDao.getSession();
+        List<Car> cars = CarDao.getCars(session);
+        for (Car car: cars){
+            String carNotes = car.getCarFullName();
+            StringBuilder sb = new StringBuilder();
+            sb.append(car.getModelYear());
+            sb.append(" ");
+            sb.append(car.getMake());
+            sb.append(" ");
+            sb.append(car.getModel());
+            sb.append(" ");
+            sb.append(car.getSubmodel());
+            String stData = sb.toString();
+            carNotes = carNotes.replace(stData,"");
+            if (carNotes.startsWith(" ")&&carNotes.length()>1){
+                carNotes = carNotes.substring(1);
+                car.setCarNotes(carNotes);
+                CarDao.saveCar(session, car);
+            }
+        }
+    }
+
+    private static void updJeep(){
+        Session session = CarDao.getSession();
+        List<ShockAbsorber> absorbers = CarDao.getAbsorbers(session);
+        List<Car> cars = CarDao.getCars(session);
+        Map<Integer,Car> carMap = new HashMap<>();
+        for (Car car : cars){
+            carMap.put(car.getId(),car);
+        }
+        for (ShockAbsorber absorber: absorbers){
+            Car car = carMap.get(absorber.getCarID());
+            if (car.getMake().equals("Jeep")){
+
+            }
+        }
+    }
+
+    private static void updateShockPosition(){
+        Session session = CarDao.getSession();
+        List<ShockAbsorber> absorbers = CarDao.getAbsorbers(session);
+        for (ShockAbsorber absorber: absorbers){
+            String position = absorber.getPosition();
+            switch(position){
+                case "Front":{
+                    absorber.setPosition("F");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                case "Rear":{
+                    absorber.setPosition("R");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                case "Front Right":{
+                    absorber.setPosition("FR");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                case "Front Left":{
+                    absorber.setPosition("FL");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                case "Rear Right":{
+                    absorber.setPosition("RR");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                case "Rear Left":{
+                    absorber.setPosition("RL");
+                    CarDao.updateShock(session, absorber);
+                    break;
+                }
+                default://do nothing
+            }
+        }
+    }
+
+    private static void updateNoInfoCars(){
+        List<String> allLines = new ArrayList<>();
+        try {
+            allLines = Files.readAllLines(Paths.get(DATA_FOR_SEARCH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map<String, String> carMap = new HashMap<>();
+
+        //processing lines from file
+        for (String carLine: allLines){
+            String split[] = carLine.split(";;");
+            String fullCar = split [0]+" "+split[2]+" "+split[4]+" "+split[6];
+            if (split.length>8){
+                fullCar = fullCar+" "+split[9];
+                if (split.length>11){
+                    fullCar = fullCar+" "+split[12];
+                    if (split.length>14){
+                        fullCar = fullCar+" "+split[15];
+                        if (split.length>17){
+                            fullCar = fullCar+" "+split[18];
+                        }
+                    }
+                }
+            }
+            carMap.put(fullCar,carLine);
+        }
+        Session session = CarDao.getSession();
+        List<CarNoInfo> carNoInfos = CarDao.getCarsNoInfo(session);
+        for (CarNoInfo carNoInfo: carNoInfos){
+            if (carNoInfo.getModelYear()==null||carNoInfo.getModelYear().length()==0){
+                String dataLine = carMap.get(carNoInfo.getCarFullName());
+                carNoInfo = buildCarFromParseLine(dataLine,carNoInfo);
+                CarDao.updateCarNoInfo(session,carNoInfo);
+                System.out.println("updated: "+carNoInfo);
+            }
+        }
+
+        System.out.println("thats all");
+        System.exit(0);
+    }
+
+    private static void fillInfo(){
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Car> cars = CarDao.getCars(session);
+        List<CarNoInfo> carsNoInfo = CarDao.getCarsNoInfo(session);
+        Map<String, Car> carMap = new HashMap<>();
+        for (Car car: cars){
+            carMap.put(car.getCarFullName(), car);
+        }
+        System.out.println("map filled");
+        for (CarNoInfo carNoInfo: carsNoInfo){
+            try {
+                Car car = carMap.get(carNoInfo.getCarFullName());
+
+                carNoInfo.setModelYear(car.getModelYear());
+                carNoInfo.setMake(car.getMake());
+                carNoInfo.setModel(car.getModel());
+                carNoInfo.setSubmodel(car.getSubmodel());
+                carNoInfo.setBodyManufacturer(car.getBodyManufacturer());
+                carNoInfo.setDrive(car.getDrive());
+                carNoInfo.setBody(car.getBody());
+                carNoInfo.setSuspension(car.getSuspension());
+                carNoInfo.setEngine(car.getEngine());
+                carNoInfo.setDoors(car.getDoors());
+                carNoInfo.setTransmission(car.getTransmission());
+
+                CarDao.updateCarNoInfo(session, carNoInfo);
+            }
+            catch (NullPointerException e){
+                System.out.println(carNoInfo);
+                continue;
+            }
+
+
+        }
+
+        System.out.println("thats all");
+        System.exit(0);
+    }
+
+    private static CarNoInfo buildCarFromParseLine(String line, CarNoInfo carNoInfo){
+        String split[] = line.split(";;");
+        carNoInfo.setModelYear(split[0]);
+        carNoInfo.setMake(split[2]);
+        carNoInfo.setModel(split[4]);
+        carNoInfo.setSubmodel(split[6]);
+        if (split.length>8){
+            setAdditionalFields(carNoInfo, split);
+        }
+        return carNoInfo;
     }
 
     private static void updCarsInDB(){
@@ -106,12 +278,40 @@ public class WebHandler {
                 }
             }
         }
-
-
-
+    }
+    private static void setAdditionalFields(CarNoInfo car, String[] split) {
+        String attribute = split [8];
+        String attributeValue = split[9];
+        setCarProperty(car,attribute,attributeValue);
+        if (split.length>11){
+            attribute = split [11];
+            attributeValue = split[12];
+            setCarProperty(car,attribute,attributeValue);
+            if (split.length>14){
+                attribute = split [14];
+                attributeValue = split[15];
+                setCarProperty(car,attribute,attributeValue);
+                if (split.length>17){
+                    attribute = split [17];
+                    attributeValue = split[18];
+                    setCarProperty(car,attribute,attributeValue);
+                }
+            }
+        }
     }
 
     private static void setCarProperty(Car car, String attribute, String atributeValue){
+        switch (attribute){
+            case "BodyManufacturer": car.setBodyManufacturer(atributeValue); break;
+            case "Drive": car.setDrive(atributeValue); break;
+            case "Body": car.setBody(atributeValue); break;
+            case "Suspension": car.setSuspension(atributeValue); break;
+            case "Engine": car.setEngine(atributeValue); break;
+            case "Doors": car.setDoors(atributeValue); break;
+            case "Transmission": car.setTransmission(atributeValue);
+        }
+    }
+    private static void setCarProperty(CarNoInfo car, String attribute, String atributeValue){
         switch (attribute){
             case "BodyManufacturer": car.setBodyManufacturer(atributeValue); break;
             case "Drive": car.setDrive(atributeValue); break;

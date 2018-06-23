@@ -40,6 +40,7 @@ public class HibernateUtil {
                 sources.addAnnotatedClass(KeyAdditionalPart.class);
                 sources.addAnnotatedClass(KeyCar.class);
                 sources.addAnnotatedClass(KeyShock.class);
+                sources.addAnnotatedClass(CarNoInfo.class);
 
                 Metadata metadata = sources.getMetadataBuilder().build();
 

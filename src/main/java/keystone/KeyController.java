@@ -12,17 +12,7 @@ public class KeyController {
 
 
     public static void main(String[] args) {
-        deleteCarDupes();
-       // KeystoneUtil.reparseSecondAttribute();
-
-
-       // reparseImgs();
-        //checkSecondAttribute();
-
-      // bootParser();
-      // checkImgs();
-
-       // updatePartNos();
+        updateJeep();
 
       /*  String partLine = KeystoneUtil.getPartLine(driver, "10-255612");
         KeystoneUtil.processResult(partLine, "10-255612", driver, session);*/
@@ -33,6 +23,28 @@ public class KeyController {
        /* String partLine = KeystoneUtil.getPartLine(driver, "24-239417");
         KeystoneUtil.processResult(partLine, "24-239417", driver, session);*/
 
+    }
+
+    private static void updateJeep(){
+        Session session = KeyDao.getSession();
+        List<KeyCar> cars = KeyDao.getCars(session);
+     //   List<KeyShock> shocks = KeyDao.getShocks(session);
+       // List<KeyAdditionalPart> adds = KeyDao.getAdditionals(session);
+
+        HashSet<String> jeepAtts = new HashSet<>();
+
+        for (KeyCar car: cars){
+            if (car.getCarMake().equals("Jeep")){
+                if (car.getShockAttributeValue2()!=null){
+                    jeepAtts.add(car.getShockAttributeValue2());
+                }
+            }
+        }
+        for (String line: jeepAtts){
+            System.out.println(line);
+        }
+
+        HibernateUtil.shutdown();
     }
 
     private static void bootParser(){

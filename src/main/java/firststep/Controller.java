@@ -1,3 +1,5 @@
+package firststep;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -7,7 +9,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.IOException;
@@ -18,15 +19,15 @@ public class Controller {
 
     public static void main(String[] args) throws IOException {
     String stopString = "1993;;480154208950490439;;Chevrolet;;636264562659427950;;Camaro;;1937232241709715798;;Z28;;9013643089022421650";
-    //SeleniumService.getDataforSearchFromStop(1993,1900, stopString);
+    //firststep.SeleniumService.getDataforSearchFromStop(1993,1900, stopString);
      WebDriver driver =  SeleniumService.initDriver();
-      //   SeleniumService.getDataforSearch(2000,1900);
-       // Service.checkParseConsistency(2019,driver);
+      //   firststep.SeleniumService.getDataforSearch(2000,1900);
+       // firststep.Service.checkParseConsistency(2019,driver);
         for (int i = 2018; i >1900 ; i--) {
             Service.checkParseConsistency(i,driver);
         }
        // driver.close();
-      //  Service.removeYear("2017");
+      //  firststep.Service.removeYear("2017");
       //  testSelenium();
     }
 
@@ -72,7 +73,7 @@ public class Controller {
                 data.setMakeValue(make.getAttribute("value"));
                 yearMakes.add(data);
             }
-          //  Service.saveYearMakes(yearMakes,year.getText());
+          //  firststep.Service.saveYearMakes(yearMakes,year.getText());
         }
         driver.close();
     }
@@ -81,7 +82,7 @@ public class Controller {
         WebDriver driver = SeleniumService.initDriver();
         List<SearchData> dataSet = Service.getYearMakeData(startYear,finishYear);
         for (SearchData data: dataSet){
-         //   SeleniumService.getYearMakeModels(driver, data);
+         //   firststep.SeleniumService.getYearMakeModels(driver, data);
         }
         driver.close();
     }

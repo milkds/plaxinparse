@@ -158,6 +158,13 @@ public class KeyDao {
 
         return cars;
     }
+    public static List<KeyCar> getCars( Session session){
+        List<KeyCar> cars = new ArrayList<>();
+        Criteria criteria = session.createCriteria(KeyCar.class);
+        cars=criteria.list();
+
+        return cars;
+    }
 
     public static int deleteCar(Session session, KeyCar car) {
         Transaction transaction = null;

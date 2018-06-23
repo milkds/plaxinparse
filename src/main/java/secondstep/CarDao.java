@@ -69,6 +69,19 @@ public class CarDao {
 
         return cars;
     }
+
+    public static List<CarNoInfo>getCarsNoInfo(Session session){
+        List<CarNoInfo> cars = new ArrayList<>();
+        try {
+            Criteria criteria = session.createCriteria(CarNoInfo.class);
+            cars=criteria.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(cars.size() + " is qty of cars in database");
+
+        return cars;
+    }
     public static List<ShockAbsorber>getAbsorbers(){
         Session session;
         List<ShockAbsorber> shockAbsorbers = new ArrayList<>();
@@ -183,6 +196,11 @@ public class CarDao {
         Car car = session.load(Car.class, carID);
         car.setCarFullName(carFullName);
         session.update(car);
+        transaction.commit();
+    }
+    public static void updateCarNoInfo(Session session, CarNoInfo carNoInfo){
+        Transaction transaction = session.beginTransaction();
+        session.update(carNoInfo);
         transaction.commit();
     }
     public static void updateShock(Session session, ShockAbsorber absorber){
