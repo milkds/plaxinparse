@@ -113,9 +113,15 @@ public class KeyController {
             }
             if (cellIterator.hasNext()){
                 cell = cellIterator.next();
-               lengths.setExtLength(cell.getNumericCellValue()+"");
+                switch (cell.getCellType()) {
+                    case Cell.CELL_TYPE_STRING: lengths.setExtLength(cell.getStringCellValue()); break;
+                    case Cell.CELL_TYPE_NUMERIC: lengths.setExtLength(cell.getNumericCellValue()+"");; break;
+                }
                 cell = cellIterator.next();
-                lengths.setColLength(cell.getNumericCellValue()+"");
+                switch (cell.getCellType()) {
+                    case Cell.CELL_TYPE_STRING: lengths.setColLength(cell.getStringCellValue()); break;
+                    case Cell.CELL_TYPE_NUMERIC: lengths.setColLength(cell.getNumericCellValue()+"");; break;
+                }
             }
             shockLengths.add(lengths);
         }
