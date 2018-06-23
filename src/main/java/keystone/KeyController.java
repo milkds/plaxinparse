@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import secondstep.HibernateUtil;
+import secondstep.ShockAbsorber;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +32,47 @@ public class KeyController {
         KeystoneUtil.processResult(partLine, "24-239417", driver, session);*/
 
     }
+    private static void updateLengths() throws IOException {
+        List<ShockLengths> shockLengths = getShLengthsFromFile();
+        int counter = 0;
+        Session session = KeyDao.getSession();
+        List<KeyShock> shocks = KeyDao.getShocks(session);
+        Map<String, ShockLengths> lengthsMap = new HashMap<>();{
+            for (ShockLengths lengths: shockLengths){
+                lengthsMap.put(lengths.getPartNo(),lengths);
+            }
+        }
+        for (KeyShock shock: shocks){
+            int tmpCount = 0;
+            String extLength = shock.getExtendedLength();
+            String colLength = shock.getCompressedLength();
+            String partNo = shock.getPartNo();
+            if (extLength==null||extLength.equals("OEM")){
+                if (lengthsMap.containsKey(partNo)){
+                    ShockLengths lengths = lengthsMap.get(partNo);
+                    if (lengths.getExtLength()!=null){
+                        shock.setExtendedLength(lengths.getExtLength());
+                        KeyDao.updateShock(session,shock);
+                        tmpCount++;
+                    }
+                }
+            }
+            if (colLength==null||colLength.equals("OEM")){
+                if (lengthsMap.containsKey(partNo)){
+                    ShockLengths lengths = lengthsMap.get(partNo);
+                    if (lengths.getColLength()!=null){
+                        shock.setCompressedLength(lengths.getColLength());
+                        KeyDao.updateShock(session,shock);
+                        tmpCount++;
+                    }
+                }
+            }
+            if (tmpCount!=0){
+                counter++;
+            }
+        }
+        System.out.println("total updated shocks: "+counter);
+    }
 
     private static void setBodyThickness() throws IOException {
         Map<String,String> partNoMap = getShockMapfromExcel();
@@ -50,6 +92,36 @@ public class KeyController {
         System.out.println("thats all");
     }
 
+
+    private static List<ShockLengths> getShLengthsFromFile() throws IOException {
+        List<ShockLengths> shockLengths = new ArrayList<>();
+
+        File myFile = new File("src\\main\\resources\\lengths.xlsx");
+
+        FileInputStream fis = new FileInputStream(myFile);
+        XSSFWorkbook myWorkBook = new XSSFWorkbook (fis);
+        XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+        Iterator<Row> rowIterator = mySheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            Iterator<Cell> cellIterator = row.cellIterator();
+            ShockLengths lengths = new ShockLengths();
+            Cell cell = cellIterator.next();
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING: lengths.setPartNo(cell.getStringCellValue()); break;
+                case Cell.CELL_TYPE_NUMERIC: lengths.setPartNo(cell.getNumericCellValue()+""); break;
+            }
+            if (cellIterator.hasNext()){
+                cell = cellIterator.next();
+               lengths.setExtLength(cell.getNumericCellValue()+"");
+                cell = cellIterator.next();
+                lengths.setColLength(cell.getNumericCellValue()+"");
+            }
+            shockLengths.add(lengths);
+        }
+
+        return shockLengths;
+    }
 
     private static Map<String, String> getShockMapfromExcel() throws IOException {
         Map<String,String> partNoMap = new HashMap<>();
