@@ -1,18 +1,25 @@
 package keystone;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import secondstep.HibernateUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class KeyController {
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
 
       /*  String partLine = KeystoneUtil.getPartLine(driver, "10-255612");
         KeystoneUtil.processResult(partLine, "10-255612", driver, session);*/
@@ -23,6 +30,50 @@ public class KeyController {
        /* String partLine = KeystoneUtil.getPartLine(driver, "24-239417");
         KeystoneUtil.processResult(partLine, "24-239417", driver, session);*/
 
+    }
+
+    private static void setBodyThickness() throws IOException {
+        Map<String,String> partNoMap = getShockMapfromExcel();
+        Session session = KeyDao.getSession();
+        List<KeyShock> shocks = KeyDao.getShocks(session);
+        for (KeyShock shock: shocks){
+            String partNo = shock.getPartNo();
+            if (partNoMap.containsKey(partNo)){
+                String bodyThickness = partNoMap.get(partNo);
+                if (bodyThickness!=null){
+                    shock.setBodyThickness(bodyThickness);
+                    KeyDao.updateShock(session,shock);
+                }
+            }
+        }
+
+        System.out.println("thats all");
+    }
+
+
+    private static Map<String, String> getShockMapfromExcel() throws IOException {
+        Map<String,String> partNoMap = new HashMap<>();
+        File myFile = new File("src\\main\\resources\\body_thickness.xlsx");
+
+        FileInputStream fis = new FileInputStream(myFile);
+        XSSFWorkbook myWorkBook = new XSSFWorkbook (fis);
+        XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+        Iterator<Row> rowIterator = mySheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            Iterator<Cell> cellIterator = row.cellIterator();
+            String partNo;
+            String bodyThickness=null;
+            Cell cell = cellIterator.next();
+            partNo = cell.getStringCellValue();
+            if (cellIterator.hasNext()){
+                cell = cellIterator.next();
+                bodyThickness = cell.getStringCellValue();
+            }
+            partNoMap.put(partNo,bodyThickness);
+        }
+
+        return partNoMap;
     }
 
     private static void groupNotes(){
@@ -121,9 +172,7 @@ public class KeyController {
         System.out.println("thats all");
     }
 
-    //INTERNAL_DESIGN ADJUSTABLE BODY_COLOR
-    // WITH_RESERVOIR INCLUDES_DUST_SHIELD INCLUDES_HARDWARE INCLUDES_BOOT QUANTITY
-    // ROD_DIAMETER BODY_MATERIAL ROD_FINISH VALVING_TYPE ROD_MATERIAL
+
 
 
     private static void updateJeep(){

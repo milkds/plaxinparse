@@ -75,6 +75,8 @@ public class KeyShock {
     @Column(name = "SHOCK_NOTES")
     private String shockNotes;
 
+    @Column(name = "BODY_THICKNESS")
+    private String bodyThickness;
 
 
     @Transient
@@ -293,5 +295,13 @@ public class KeyShock {
 
     public void setShockNotes(String shockNotes) {
         this.shockNotes = shockNotes;
+    }
+
+    public String getBodyThickness() {
+        return bodyThickness;
+    }
+
+    public void setBodyThickness(String bodyThickness) {
+        this.bodyThickness = bodyThickness;
     }
 }
