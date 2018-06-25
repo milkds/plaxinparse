@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "cars")
+@Table(name = "cars2")
 public class Car {
 
     @Column(name = "CAR_FULL_NAME")
@@ -50,6 +50,12 @@ public class Car {
 
     @Column(name = "CAR_NOTES")
     private String carNotes;
+
+    @Column(name = "YEAR_START")
+    private String yearStart;
+
+    @Column(name = "YEAR_FINISH")
+    private String yearFinish;
 
     @Transient
     private List<ShockAbsorber> absorbers;
@@ -202,5 +208,21 @@ public class Car {
 
     public void setCarNotes(String carNotes) {
         this.carNotes = carNotes;
+    }
+
+    public String getYearStart() {
+        return yearStart;
+    }
+
+    public void setYearStart(String yearStart) {
+        this.yearStart = yearStart;
+    }
+
+    public String getYearFinish() {
+        return yearFinish;
+    }
+
+    public void setYearFinish(String yearFinish) {
+        this.yearFinish = yearFinish;
     }
 }

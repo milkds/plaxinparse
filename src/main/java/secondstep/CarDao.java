@@ -5,9 +5,12 @@ import keystone.KeyAdditionalPart;
 import keystone.KeyCar;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.NullPrecedence;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -19,6 +22,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class CarDao {
+
+    public static void main(String[] args) {
+        processLifts();
+
+    }
+
     public static List<Car>getCars(){
         Session session = null;
         Transaction transaction = null;
@@ -61,6 +70,23 @@ public class CarDao {
         List<Car> cars = new ArrayList<>();
         try {
             Criteria criteria = session.createCriteria(Car.class);
+            cars=criteria.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(cars.size() + " is qty of cars in database");
+
+        return cars;
+    }
+    public static List<Car>getCarsOrdered(Session session){
+        List<Car> cars = new ArrayList<>();
+        try {
+            Criteria criteria = session.createCriteria(Car.class);
+            criteria.addOrder(Order.asc("make"));
+            criteria.addOrder(Order.asc("model"));
+            criteria.addOrder(Order.asc("submodel"));
+            criteria.addOrder(Order.asc("drive").nulls(NullPrecedence.LAST));
+            criteria.addOrder(Order.asc("modelYear"));
             cars=criteria.list();
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,10 +138,19 @@ public class CarDao {
         }
         return shockAbsorbers;
     }
-    public static void main(String[] args) {
-      processLifts();
+    public static List<ShockAbsorber> getAbsorbersByCarID(Session session, Integer carID){
+        List<ShockAbsorber> shockAbsorbers = new ArrayList<>();
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            Criteria criteria = session.createCriteria(ShockAbsorber.class);
+            criteria.add(Restrictions.eq("carID",carID));
+            shockAbsorbers=criteria.list();
+        } catch (Exception e) {
 
+        }
+        return shockAbsorbers;
     }
+
 
     public static Car buildTestCar(){
         List<ShockAbsorber> absorbers = new ArrayList<>();
@@ -195,6 +230,11 @@ public class CarDao {
         Transaction transaction = session.beginTransaction();
         Car car = session.load(Car.class, carID);
         car.setCarFullName(carFullName);
+        session.update(car);
+        transaction.commit();
+    }
+    public static void updateCar(Session session, Car car){
+        Transaction transaction = session.beginTransaction();
         session.update(car);
         transaction.commit();
     }

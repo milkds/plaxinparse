@@ -1,8 +1,10 @@
 package secondstep;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.NullPrecedence;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,7 +31,102 @@ public class WebHandler {
 
 
     public static void main(String[] args) throws IOException {
-        addCarNotes();
+        divideYears();
+    }
+
+    private static void divideYears(){
+        Session session = CarDao.getSession();
+        List<Car> cars = CarDao.getCarsOrdered(session);
+
+        Car prevCar = null;
+        String yearStart = null;
+        String yearFinish = null;
+        List<Car> equalCars = new ArrayList<>();
+        for (Car car: cars){
+            //implement cycle start
+            if  (prevCar==null){
+                prevCar = car;
+                yearStart = car.getModelYear();
+                car.setYearStart(yearStart);
+                equalCars.add(car);
+                continue;
+            }
+            if (carsEqual(car,prevCar,session)){
+                car.setYearStart(yearStart);
+                equalCars.add(car);
+            }
+            else {
+                yearFinish=prevCar.getModelYear();
+                for (Car tempCar: equalCars){
+                    tempCar.setYearFinish(yearFinish);
+                    CarDao.updateCar(session,tempCar);
+                }
+                prevCar = car;
+                yearStart = car.getModelYear();
+                car.setYearStart(yearStart);
+                equalCars=new ArrayList<>();
+                equalCars.add(car);
+            }
+        }
+
+
+        HibernateUtil.shutdown();
+    }
+
+    private static boolean carsEqual(Car car, Car prevCar, Session session) {
+        if (!car.getMake().equals(prevCar.getMake()) ){
+            return false;
+        }
+        if (!car.getModel().equals(prevCar.getModel())){
+            return false;
+        }
+        if (!car.getSubmodel().equals(prevCar.getSubmodel())){
+            return false;
+        }
+        String prevDrive = prevCar.getDrive();
+
+        //drives very often null - checks needed
+        String curDrive = car.getDrive();
+        if (prevDrive==null&&curDrive!=null){
+            return false;
+        }
+        if (prevDrive!=null&&curDrive==null){
+            return false;
+        }
+        if (curDrive!=null){
+            if (!curDrive.equals(prevDrive)){
+                return false;
+            }
+        }
+        //if cars are not in consecutive modelYear row - they are considered as different cars.
+        int prevYear = (Integer.parseInt(prevCar.getModelYear()));
+        int curYear = (Integer.parseInt(car.getModelYear()));
+        if (curYear-prevYear!=1){
+            return false;
+        }
+        return shocksEqual(car, prevCar, session);
+    }
+
+    private static boolean shocksEqual(Car car, Car prevCar, Session session) {
+        List<ShockAbsorber> curShocks = CarDao.getAbsorbersByCarID(session,car.getId());
+        List<ShockAbsorber> prevShocks = CarDao.getAbsorbersByCarID(session,prevCar.getId());
+        //if cars have different number of shocks - we consider them as different cars
+        if (curShocks.size()!=prevShocks.size()){
+            return false;
+        }
+        List<String> currentParts = new ArrayList<>();
+        List<String> prevParts = new ArrayList<>();
+        for (int i = 0; i < curShocks.size(); i++) {
+            currentParts.add(curShocks.get(i).getPartNo());
+            prevParts.add(prevShocks.get(i).getPartNo());
+        }
+        //if cars do have different shocks - we consider them as different cars
+        for (String curPart: currentParts){
+            if (!prevParts.contains(curPart)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void addCarNotes(){
