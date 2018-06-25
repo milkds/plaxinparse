@@ -42,7 +42,13 @@ public class WebHandler {
         String yearStart = null;
         String yearFinish = null;
         List<Car> equalCars = new ArrayList<>();
+        int counter = 0;
         for (Car car: cars){
+            counter++;
+            if (counter==100){
+                System.out.println("counter 100");
+                System.exit(0);
+            }
             //implement cycle start
             if  (prevCar==null){
                 prevCar = car;
@@ -54,13 +60,19 @@ public class WebHandler {
             if (carsEqual(car,prevCar,session)){
                 car.setYearStart(yearStart);
                 equalCars.add(car);
+                prevCar = car;
             }
             else {
                 yearFinish=prevCar.getModelYear();
                 for (Car tempCar: equalCars){
                     tempCar.setYearFinish(yearFinish);
-                    CarDao.updateCar(session,tempCar);
+                    System.out.println(tempCar);
+                 //   CarDao.updateCar(session,tempCar);
                 }
+                System.out.println("-----------------Car block ----------------------");
+                System.out.println();
+                System.out.println();
+                System.out.println();
                 prevCar = car;
                 yearStart = car.getModelYear();
                 car.setYearStart(yearStart);

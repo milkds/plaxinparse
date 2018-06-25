@@ -192,13 +192,9 @@ public class Car {
                 ", make='" + make + '\'' +
                 ", model='" + model + '\'' +
                 ", submodel='" + submodel + '\'' +
-                ", bodyManufacturer='" + bodyManufacturer + '\'' +
                 ", drive='" + drive + '\'' +
-                ", body='" + body + '\'' +
-                ", suspension='" + suspension + '\'' +
-                ", engine='" + engine + '\'' +
-                ", doors='" + doors + '\'' +
-                ", transmission='" + transmission + '\'' +
+                ", yearStart='" + yearStart + '\'' +
+                ", yearFinish='" + yearFinish + '\'' +
                 '}';
     }
 
