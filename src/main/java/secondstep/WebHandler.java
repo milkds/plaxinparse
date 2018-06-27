@@ -42,13 +42,10 @@ public class WebHandler {
         String yearStart = null;
         String yearFinish = null;
         List<Car> equalCars = new ArrayList<>();
-        int counter = 0;
         for (Car car: cars){
-            counter++;
-            if (counter==100){
-                System.out.println("counter 100");
-                System.exit(0);
-            }
+           if (car.getSuspension()==null&&car.getBody()==null&&car.getBodyManufacturer()==null&&car.getEngine()==null&&car.getTransmission()==null&&car.getDoors()==null){
+               continue;
+           }
             //implement cycle start
             if  (prevCar==null){
                 prevCar = car;
@@ -69,10 +66,6 @@ public class WebHandler {
                     System.out.println(tempCar);
                  //   CarDao.updateCar(session,tempCar);
                 }
-                System.out.println("-----------------Car block ----------------------");
-                System.out.println();
-                System.out.println();
-                System.out.println();
                 prevCar = car;
                 yearStart = car.getModelYear();
                 car.setYearStart(yearStart);
@@ -114,7 +107,9 @@ public class WebHandler {
         int prevYear = (Integer.parseInt(prevCar.getModelYear()));
         int curYear = (Integer.parseInt(car.getModelYear()));
         if (curYear-prevYear!=1){
-            return false;
+          if  (curYear-prevYear!=0){
+                return false;
+            }
         }
         return shocksEqual(car, prevCar, session);
     }

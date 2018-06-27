@@ -86,6 +86,7 @@ public class CarDao {
             criteria.addOrder(Order.asc("model"));
             criteria.addOrder(Order.asc("submodel"));
             criteria.addOrder(Order.asc("drive").nulls(NullPrecedence.LAST));
+            criteria.addOrder(Order.asc("suspension").nulls(NullPrecedence.LAST));
             criteria.addOrder(Order.asc("modelYear"));
             cars=criteria.list();
         } catch (Exception e) {
