@@ -16,10 +16,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Level;
 
 public class WebHandler {
     private static final String MAIN_URL_FORMAT = "https://cart.bilsteinus.com/results?yearid=%s&makeid=%s&modelid=%s&submodelid=%s";
@@ -31,7 +29,84 @@ public class WebHandler {
 
 
     public static void main(String[] args) throws IOException {
-        divideYears();
+       divideYearsCompl();
+    }
+
+    private static void divideYearsCompl(){
+        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        Session session = CarDao.getSession();
+        List<Car> allCars = CarDao.getCarsOrdered(session);
+        Set<Integer> processedCarIDs = new HashSet<>();
+        System.out.println("Hey Boys, Hey Girls - here do we go");
+        for (Car curCar: allCars){
+            if (processedCarIDs.contains(curCar.getId())){
+                continue;
+            }
+
+            //getting shock to filter cars by its part_no
+            List<ShockAbsorber> curShocks = CarDao.getAbsorbersByCarID(session,curCar.getId());
+            ShockAbsorber filterShock = curShocks.get(0);
+
+            //getting list of car IDs for cars where filterShock can be used
+            List<Integer> carIDsByShock = CarDao.getCarIDsByShock(session,filterShock);
+
+            //getting car which have same make model and all can have filtershock
+            List<Car> carsWithSameProps = CarDao.getCarsByMakeModelIDs(session, curCar, carIDsByShock);
+
+            //getting equal cars
+            List<Car> equalCars = new ArrayList<>();
+            for (Car tmpCar: carsWithSameProps){
+                List<ShockAbsorber> tmpShocks = CarDao.getAbsorbersByCarID(session,tmpCar.getId());
+                if (shocksEqual(curShocks,tmpShocks)){
+                    equalCars.add(tmpCar);
+                }
+            }
+
+            //setting yearStart/yearFinish
+            setPeriod(equalCars);
+
+            //saving cars:
+            for (Car car: equalCars){
+                CarDao.updateCar(session,car);
+                processedCarIDs.add(car.getId());
+                System.out.println(car);
+            }
+        }
+    }
+
+    private static void setPeriod(List<Car> equalCars) {
+        Integer yearStart = 3000;
+        Integer yearFinish = 0;
+        for (Car car: equalCars){
+            int currentYear = Integer.parseInt(car.getModelYear());
+            if (currentYear<yearStart){
+                yearStart=currentYear;
+            }
+            if (currentYear>yearFinish){
+                yearFinish = currentYear;
+            }
+        }
+        for (Car car: equalCars){
+            car.setYearStart(yearStart+"");
+            car.setYearFinish(yearFinish+"");
+        }
+    }
+
+    private static boolean shocksEqual(List<ShockAbsorber> curShocks, List<ShockAbsorber> tmpShocks) {
+        if (curShocks.size()!=tmpShocks.size()){
+            return false;
+        }
+        Set<String> partNos = new HashSet<>();
+        for (ShockAbsorber shock: curShocks){
+            partNos.add(shock.getPartNo());
+        }
+        for (ShockAbsorber shock : tmpShocks){
+            if (!partNos.contains(shock.getPartNo())){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void divideYears(){

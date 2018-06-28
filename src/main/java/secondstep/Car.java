@@ -193,6 +193,8 @@ public class Car {
                 ", submodel='" + submodel + '\'' +
                 ", drive='" + drive + '\'' +
                 ", suspension='" + suspension + '\'' +
+                ", yearStart='" + yearStart + '\'' +
+                ", yearFinish='" + yearFinish + '\'' +
                 '}';
     }
 

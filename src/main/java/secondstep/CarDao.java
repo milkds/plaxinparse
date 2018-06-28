@@ -9,6 +9,7 @@ import org.hibernate.NullPrecedence;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -306,5 +307,34 @@ public class CarDao {
                 }
             }
         }
+    }
+
+    public static List<Integer> getCarIDsByShock(Session session, ShockAbsorber filterShock) {
+        List<Integer> carIDs = new ArrayList<>();
+        try {
+            Criteria criteria = session.createCriteria(ShockAbsorber.class);
+            criteria.setProjection(Projections.property("carID"));
+            criteria.add(Restrictions.eq("partNo",filterShock.getPartNo()));
+            carIDs=criteria.list();
+        } catch (Exception e) {
+
+        }
+
+        return carIDs;
+    }
+
+    public static List<Car> getCarsByMakeModelIDs(Session session, Car filterCar, List<Integer> carIDsByShock) {
+        List<Car> cars = new ArrayList<>();
+        try {
+            Criteria criteria = session.createCriteria(Car.class);
+            criteria.add(Restrictions.eq("make",filterCar.getMake()));
+            criteria.add(Restrictions.eq("model",filterCar.getModel()));
+            criteria.add(Restrictions.in("id",carIDsByShock.toArray()));
+            cars=criteria.list();
+        } catch (Exception e) {
+
+        }
+
+        return cars;
     }
 }
