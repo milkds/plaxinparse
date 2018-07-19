@@ -67,7 +67,7 @@ public class WebHandler {
 
             //saving cars:
             for (Car car: equalCars){
-                CarDao.updateCar(session,car);
+              //  CarDao.updateCar(session,car);
                 processedCarIDs.add(car.getId());
                 System.out.println(car);
             }
