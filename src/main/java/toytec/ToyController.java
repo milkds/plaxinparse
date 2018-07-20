@@ -44,10 +44,10 @@ public class ToyController {
 
     private static void parseCategory(){
         Session session = HibernateUtil.getSessionFactory().openSession();
-        String categoryUrl = "https://www.toyteclifts.com/complete-lift-kits.html?product_list_limit=all&product_list_mode=list";
+        String categoryUrl = "https://www.toyteclifts.com/lighting.html?product_list_mode=list&product_list_limit=all";
         WebDriver driver = ToyUtil.initDriver3(categoryUrl);
         ToyUtil.iterateItems(driver, session);
-
         driver.close();
+        System.exit(0);
     }
 }

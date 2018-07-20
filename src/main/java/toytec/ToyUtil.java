@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToyUtil {
+    private static final String PROBLEM_LOG_PATH = "src\\main\\resources\\toytec_files\\problemlog";
 
     public static WebDriver initDriver(){
         System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\chromedriver.exe");
@@ -215,6 +216,7 @@ public class ToyUtil {
         String description = getDescription(driver);
         String mainImgUrl = getMainImgUrl(driver);
         String imgUrls = getImgUrls(driver);
+        String itemMake = getItemMake(driver);
         String instructions = getInstructions(driver);
         boolean inStock = isInStock(driver);
         BigDecimal priceFrom = getPriceFrom(driver);
@@ -233,6 +235,7 @@ public class ToyUtil {
         System.out.println("Price from: " + priceFrom);
         System.out.println("Price to: " + priceTo);
         System.out.println("Item Link: " + itemLink);
+        System.out.println("Item Make: " + itemMake);
 
         for (ToyOption option : options){
             System.out.println(option);
@@ -243,6 +246,7 @@ public class ToyUtil {
         item.setDesc(description);
         item.setMainImg(mainImgUrl);
         item.setImgLinks(imgUrls);
+        item.setItemMake(itemMake);
         item.setInstructions(instructions);
         item.setInStock(inStock);
         item.setPriceFrom(priceFrom);
@@ -254,6 +258,47 @@ public class ToyUtil {
 
         return item;
     }
+
+    private static String getItemMake(WebDriver driver) {
+        String itemMake = "";
+
+        WebElement moreInfo = driver.findElement(By.id("tab-label-additional-title"));
+        moreInfo.click();
+
+        while (true){
+            WebElement manufacturerEl = driver.findElement(By.cssSelector("td[data-th='Manufacturer']"));
+            itemMake = manufacturerEl.getText();
+            if (itemMake!=null&&itemMake.length()>0){
+                break;
+            }
+            else {
+                bad_sleep(100);
+            }
+        }
+
+        WebElement additionalRowEl = driver.findElement(By.id("product-attribute-specs-table"));
+        List<WebElement> additionalRows = additionalRowEl.findElements(By.tagName("tr"));
+        if (additionalRows.size()>1){
+            logUnexpectedData("unexpected additional info(rows qty)", driver.getCurrentUrl());
+        }
+        System.out.println("additional rows qty: "+additionalRows.size());
+
+        return itemMake;
+    }
+
+    private static void logUnexpectedData(String message, String itemUrl) {
+        try(FileWriter fw = new FileWriter(PROBLEM_LOG_PATH, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw))
+        {
+            out.println(message+"-----"+itemUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("problem logged for "+itemUrl);
+    }
+
 
     private static List<ToyOption> getOptions(WebDriver driver) {
         List<ToyOption> options = new ArrayList<>();

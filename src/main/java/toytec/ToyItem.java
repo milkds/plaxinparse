@@ -31,10 +31,10 @@ public class ToyItem {
     @Column(name = "ITEM_INSTRUCTION_LINKS")
     private String instructions;
 
-    @Column (name = "IN_STOCK")
+    @Column(name = "IN_STOCK")
     private Boolean inStock;
 
-    @Column (name = "PRICE_FROM")
+    @Column(name = "PRICE_FROM")
     private BigDecimal priceFrom;
 
     @Column(name = "PRICE_TO")
@@ -49,6 +49,9 @@ public class ToyItem {
     @Column(name = "ITEM_CATEGORY_LINK")
     private String itemCategoryLink;
 
+    @Column(name = "ITEM_MAKE")
+    private String itemMake;
+
     @Transient
     private List<ToyOption> options;
 
@@ -62,11 +65,12 @@ public class ToyItem {
                 ", imgLinks='" + imgLinks + '\'' +
                 ", instructions='" + instructions + '\'' +
                 ", inStock=" + inStock +
-                ", priceFrom='" + priceFrom + '\'' +
-                ", priceTo='" + priceTo + '\'' +
+                ", priceFrom=" + priceFrom +
+                ", priceTo=" + priceTo +
                 ", itemLink='" + itemLink + '\'' +
                 ", itemCategory='" + itemCategory + '\'' +
                 ", itemCategoryLink='" + itemCategoryLink + '\'' +
+                ", itemMake='" + itemMake + '\'' +
                 ", options=" + options +
                 '}';
     }
@@ -181,5 +185,13 @@ public class ToyItem {
 
     public void setPriceTo(BigDecimal priceTo) {
         this.priceTo = priceTo;
+    }
+
+    public String getItemMake() {
+        return itemMake;
+    }
+
+    public void setItemMake(String itemMake) {
+        this.itemMake = itemMake;
     }
 }
