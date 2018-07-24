@@ -8,8 +8,46 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ToytecItemBuilder {
+
+    public static List<String> getItemSKUsFromCategory(String categoryUrl) throws IOException {
+        List<String> sku = new ArrayList<>();
+        Document doc = Jsoup.connect("https://www.toyteclifts.com/front-lifts-coilovers/front-coilovers-and-spacers.html?product_list_limit=all").get();
+        Elements itemEls = doc.getElementsByAttributeValue("class", "item product product-item");
+        for (Element itemEl: itemEls){
+            Element skuEl = itemEl.getElementsByClass("product-item-link").first();
+            System.out.println(skuEl.text());
+
+            String skuText = skuEl.text();
+            skuText  = getSkuFromSKUnameString(skuText);
+            System.out.println(skuText);
+
+            sku.add(skuText);
+        }
+
+
+        return sku;
+    }
+
+    private static String getSkuFromSKUnameString(String skuText) {
+        String sku = skuText;
+        if (skuText.contains("- ")){
+            sku = StringUtils.substringBefore(skuText, "- ");
+        }
+        else {
+            sku = StringUtils.substringBefore(skuText," ");
+        }
+        if (sku.startsWith("-")){
+            sku = StringUtils.substringAfter(sku, "-");
+        }
+        if (sku.startsWith(" ")){
+            sku = StringUtils.substringAfter(sku, " ");
+        }
+        return sku;
+    }
 
     public static void getStock(ToyItem item) throws IOException {
        /* File file = new File("F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\toytec_files\\testPage");
@@ -27,10 +65,21 @@ public class ToytecItemBuilder {
         }
         String availability = availabilityEL.text();
         String backOrder = "";
+        Elements configurable = stockSKUel.getElementsByAttributeValue("id","availability-configurable");
+        if (configurable.size()>0){
+            stockSKUel = configurable.first();
+        }
         Elements backOrderEl = stockSKUel.getElementsByClass("product-availability-backorder");
         int backorderSize = backOrderEl.size();
         if (backorderSize>0) {
            backOrder = backOrderEl.first().text();
+        }
+        else {
+            Elements inStockEl = stockSKUel.getElementsByClass("product-availability-in-stock");
+            int inStockSize = inStockEl.size();
+            if (inStockSize>0){
+                backOrder = inStockEl.first().text();
+            }
         }
         System.out.println("availability: " + availability);
         System.out.println("backOrder: " + backOrder);
@@ -49,6 +98,7 @@ public class ToytecItemBuilder {
                 case "product-info-stock-sku": break;
                 case "stock available": break;
                 case "product-availability-backorder": break;
+                case "product-availability-in-stock": break;
                 default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session: "+checkEl, itemUrl);
             }
 
