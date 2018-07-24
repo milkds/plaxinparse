@@ -4,11 +4,53 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ToytecItemBuilder {
+
+    public static void getStock(ToyItem item) throws IOException {
+       /* File file = new File("F:\\My Java Projects\\plaxinparse\\src\\main\\resources\\toytec_files\\testPage");
+        Document doc = Jsoup.parse(file, null);*/
+      //  Document doc = Jsoup.connect("https://www.toyteclifts.com/171601-arb-1-gallon-forged-aluminum-air-tank.html").get();
+
+
+        String itemUrl = item.getItemLink();
+        Document doc = Jsoup.connect(itemUrl).get();
+        Element stockSKUel = doc.getElementsByClass("product-info-stock-sku").first();
+        Element availabilityEL = stockSKUel.getElementsByAttributeValueContaining("class", "stock available").first();
+
+        String availability = availabilityEL.text();
+        String backOrder = "";
+        Elements backOrderEl = stockSKUel.getElementsByClass("product-availability-backorder");
+        int backorderSize = backOrderEl.size();
+        if (backorderSize>0) {
+           backOrder = backOrderEl.first().text();
+        }
+        System.out.println("availability: " + availability);
+        System.out.println("backOrder: " + backOrder);
+
+        item.setAvailability(availability);
+        item.setBackOrder(backOrder);
+
+        Elements stockEls = stockSKUel.getElementsByTag("div");
+        System.out.println(stockEls.size());
+        for (Element stockEl: stockEls){
+            String checkEl = stockEl.attr("class");
+           if (checkEl.equals("product attribute sku")){
+               break;
+           }
+            switch (checkEl){
+                case "product-info-stock-sku": break;
+                case "stock available": break;
+                case "product-availability-backorder": break;
+                default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session", itemUrl);
+            }
+
+        }
+    }
 
     public static ToyItem buildItem(String itemUrl) throws IOException {
         ToyItem item = new ToyItem();

@@ -286,7 +286,7 @@ public class ToyUtil {
         return itemMake;
     }
 
-    private static void logUnexpectedData(String message, String itemUrl) {
+    public static void logUnexpectedData(String message, String itemUrl) {
         try(FileWriter fw = new FileWriter(PROBLEM_LOG_PATH, true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))

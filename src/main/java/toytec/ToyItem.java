@@ -52,6 +52,17 @@ public class ToyItem {
     @Column(name = "ITEM_MAKE")
     private String itemMake;
 
+    @Column(name = "ITEM_STOCK_AVAILABILITY")
+    private String availability;
+
+    @Column(name = "ITEM_STOCK_BACKORDER")
+    private String backOrder;
+
+    @Column(name = "ITEM_SUBCATEGORY")
+    private String itemSubCategory;
+
+
+
     @Transient
     private List<ToyOption> options;
 
@@ -71,8 +82,34 @@ public class ToyItem {
                 ", itemCategory='" + itemCategory + '\'' +
                 ", itemCategoryLink='" + itemCategoryLink + '\'' +
                 ", itemMake='" + itemMake + '\'' +
-                ", options=" + options +
+                ", availability='" + availability + '\'' +
+                ", backOrder='" + backOrder + '\'' +
+                ", itemSubCategory='" + itemSubCategory + '\'' +
                 '}';
+    }
+
+    public String getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
+    }
+
+    public String getBackOrder() {
+        return backOrder;
+    }
+
+    public void setBackOrder(String backOrder) {
+        this.backOrder = backOrder;
+    }
+
+    public String getItemSubCategory() {
+        return itemSubCategory;
+    }
+
+    public void setItemSubCategory(String itemSubCategory) {
+        this.itemSubCategory = itemSubCategory;
     }
 
     public String getItemLink() {
