@@ -21,7 +21,10 @@ public class ToytecItemBuilder {
         Document doc = Jsoup.connect(itemUrl).get();
         Element stockSKUel = doc.getElementsByClass("product-info-stock-sku").first();
         Element availabilityEL = stockSKUel.getElementsByAttributeValueContaining("class", "stock available").first();
-
+        if  (availabilityEL==null){
+            ToyUtil.logUnexpectedData("no availability Element", itemUrl);
+            return;
+        }
         String availability = availabilityEL.text();
         String backOrder = "";
         Elements backOrderEl = stockSKUel.getElementsByClass("product-availability-backorder");
@@ -46,7 +49,7 @@ public class ToytecItemBuilder {
                 case "product-info-stock-sku": break;
                 case "stock available": break;
                 case "product-availability-backorder": break;
-                default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session", itemUrl);
+                default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session: "+checkEl, itemUrl);
             }
 
         }
