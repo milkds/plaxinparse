@@ -46,6 +46,9 @@ public class ToytecItemBuilder {
         if (sku.startsWith(" ")){
             sku = StringUtils.substringAfter(sku, " ");
         }
+        if  (sku.endsWith(" ")){
+            sku = StringUtils.removeEnd(sku, " ");
+        }
         return sku;
     }
 

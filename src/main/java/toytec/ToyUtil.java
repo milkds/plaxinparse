@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ToyUtil {
     private static final String PROBLEM_LOG_PATH = "src\\main\\resources\\toytec_files\\problemlog";
@@ -594,5 +596,106 @@ public class ToyUtil {
             System.out.println(nameSKUstring);
         }
         return itemSKUs;
+    }
+
+    public static List<String> getSKUlistFromCategory(WebDriver driver) {
+        List<String> skuList = new ArrayList<>();
+        List<WebElement> itemEls = driver.findElements(By.cssSelector("li[class='item product product-item']"));
+        for (WebElement element: itemEls){
+            String itemSkuLine = element.findElement(By.className("product-item-link")).getText();
+            itemSkuLine = ToytecItemBuilder.getSkuFromSKUnameString(itemSkuLine);
+            skuList.add(itemSkuLine);
+        }
+
+        return skuList;
+    }
+    public static List<String> getItemLinksFromCategory(WebDriver driver) {
+        List<String> itemLinks = new ArrayList<>();
+        List<WebElement> itemEls = driver.findElements(By.cssSelector("li[class='item product product-item']"));
+        for (WebElement element: itemEls){
+            String itemLink = element.findElement(By.className("product-item-link")).getAttribute("href");
+
+            itemLinks.add(itemLink);
+        }
+
+        return itemLinks;
+    }
+
+    public static List<ToyItem> getItemsBySkuList(List<String> skuList, Session session) {
+        List<ToyItem> items = ToyTecDao.getItemsFromList(skuList, session);
+        if (items.size()!= skuList.size()){
+            System.out.println("item list doesn't match skulist. Checking.");
+            checkMissingSKU(items,skuList);
+        }
+        return items;
+    }
+    public static List<ToyItem> getItemsByImgLinks(List<String> imgLinks, Session session) {
+        List<ToyItem> items = ToyTecDao.getItemsFromList(imgLinks, session);
+        if (items.size()!= imgLinks.size()){
+            System.out.println("item list doesn't match skulist. Checking.");
+            checkMissingItemLink(items,imgLinks);
+        }
+        return items;
+    }
+
+    private static void checkMissingSKU(List<ToyItem> items, List<String> skuList) {
+        Map<String, ToyItem> itemMap = new HashMap<>();
+        for (ToyItem item : items){
+            itemMap.put(item.getSku(), item);
+        }
+
+        for (String sku: skuList){
+            if (!itemMap.containsKey(sku)){
+                logUnexpectedData("Cannot find item with sku: "+sku,"NO URL");
+            }
+        }
+    }
+    private static void checkMissingItemLink(List<ToyItem> items, List<String> itemLinks) {
+        Map<String, ToyItem> itemMap = new HashMap<>();
+        for (ToyItem item : items){
+            itemMap.put(item.getItemLink(), item);
+        }
+
+        for (String itemLink: itemLinks){
+            if (!itemMap.containsKey(itemLink)){
+                logUnexpectedData("Cannot find item", itemLink);
+            }
+        }
+    }
+
+    public static void setSubCategory(List<ToyItem> itemsBySKU, String subCategory, Session session) {
+        for (ToyItem item: itemsBySKU){
+            item.setItemSubCategory(subCategory);
+            System.out.println(item);
+            ToyTecDao.updateItem(item,session);
+        }
+    }
+
+    public static WebDriver initDriver4(String itemUrl) {
+        System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        driver.get(itemUrl);
+
+        int counter = 0;
+        while (driver.findElements(By.id("igSplashElement")).size()==0){
+            if (counter == 100){
+                break;
+            }
+            bad_sleep(100);
+            counter++;
+        }
+        if (counter!=100){
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            WebElement  close = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.cssSelector("i[class='material-icons']")));
+            close.click();
+            System.out.println("close clicked");
+        }
+
+        while (driver.findElements(By.cssSelector("div[class='gallery-placeholder']")).size()==0){
+            bad_sleep(50);
+        }
+
+        return driver;
     }
 }

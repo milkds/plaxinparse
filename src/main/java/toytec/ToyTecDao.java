@@ -56,9 +56,21 @@ public class ToyTecDao {
             if (transaction != null) {
                 transaction.rollback();
             }
-            System.out.println("couldn't save car to db "+ item.getItemName());
+            System.out.println("couldn't save item to db "+ item.getItemName());
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    public static List<ToyItem> getItemsFromList(List<String> skuList, Session session) {
+        List<ToyItem> toyItems = new ArrayList<>();
+        try {
+            Criteria criteria = session.createCriteria(ToyItem.class);
+            criteria.add(Restrictions.in("itemLink", skuList));
+            toyItems=criteria.list();
+        } catch (Exception e) {
+
+        }
+        return toyItems;
     }
 }
