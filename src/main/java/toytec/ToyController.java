@@ -21,7 +21,7 @@ public class ToyController {
 
        // getAndSaveKits();
 
-      //  updateCategory();
+        updateItemStock();
     }
     private static void updateCategory() throws IOException {
         ToytecItemBuilder.getItemSKUsFromCategory("");

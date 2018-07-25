@@ -182,7 +182,7 @@ public class WebHandler {
         int prevYear = (Integer.parseInt(prevCar.getModelYear()));
         int curYear = (Integer.parseInt(car.getModelYear()));
         if (curYear-prevYear!=1){
-          if  (curYear-prevYear!=0){
+          if  (curYear!=prevYear){
                 return false;
             }
         }

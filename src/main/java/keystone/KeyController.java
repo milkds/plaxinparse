@@ -22,6 +22,7 @@ public class KeyController {
 
     public static void main(String[] args) throws IOException {
 
+        updateLengths();
       /*  String partLine = KeystoneUtil.getPartLine(driver, "10-255612");
         KeystoneUtil.processResult(partLine, "10-255612", driver, session);*/
 

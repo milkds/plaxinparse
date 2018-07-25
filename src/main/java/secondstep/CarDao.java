@@ -175,13 +175,13 @@ public class CarDao {
         try {
             transaction = session.getTransaction();
             transaction.begin();
-
-            int id = (Integer)session.save(car);
+            session.persist(car);
+            /*int id = (Integer)session.save(car);
             List<ShockAbsorber> absorbers = car.getAbsorbers();
             for (ShockAbsorber absorber: absorbers){
                 absorber.setCarID(id);
                 session.persist(absorber);
-            }
+            }*/
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -251,62 +251,23 @@ public class CarDao {
         transaction.commit();
     }
 
-    public static void processLifts(){
+    public static void processLifts() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<ShockAbsorber> absorbers = getAbsorbers(session);
-
-
-        for (ShockAbsorber absorber: absorbers) {
+        for (ShockAbsorber absorber : absorbers) {
+        if (absorber.getLiftStart()==null&&absorber.getLiftFinish()==null){
             String notes = absorber.getNotes();
-            if (notes != null) {
-                if (notes.contains("Rear Lift") && notes.contains("Front Lift")) {
-                    String position = absorber.getPosition();
-                    String start = position+" Lifted Height: ";
-                    String finish = "\"";
-                    String lift = StringUtils.substringBetween(notes,start,finish);
-                   String split[] = lift.split("-");
-                   if (split.length==2){
-                       absorber.setLiftStart(split[0]);
-                       absorber.setLiftFinish(split[1]);
-                   }
-                   else {
-                       absorber.setLiftStart(split[0]);
-                       absorber.setLiftFinish(split[0]);
-                   }
-                   updateShock(session,absorber);
-                }
-                else if (notes.contains("Front Lift")){
-                    String start = "Front Lifted Height: ";
-                    String finish = "\"";
-                    String lift = StringUtils.substringBetween(notes,start,finish);
-                    String split[] = lift.split("-");
-                    if (split.length==2){
-                        absorber.setLiftStart(split[0]);
-                        absorber.setLiftFinish(split[1]);
-                    }
-                    else {
-                        absorber.setLiftStart(split[0]);
-                        absorber.setLiftFinish(split[0]);
-                    }
-                    updateShock(session,absorber);
-                }
-                else if (notes.contains("Rear Lift")){
-                    String start = "Rear Lifted Height: ";
-                    String finish = "\"";
-                    String lift = StringUtils.substringBetween(notes,start,finish);
-                    String split[] = lift.split("-");
-                    if (split.length==2){
-                        absorber.setLiftStart(split[0]);
-                        absorber.setLiftFinish(split[1]);
-                    }
-                    else {
-                        absorber.setLiftStart(split[0]);
-                        absorber.setLiftFinish(split[0]);
-                    }
-                    updateShock(session,absorber);
-                }
+
+            if (notes!=null&&notes.contains("Lift")){
+                System.out.println(notes);
+                System.out.println(absorber.getId());
             }
         }
+
+        }
+        System.out.println("thats all");
+        session.close();
+        System.exit(0);
     }
 
     public static List<Integer> getCarIDsByShock(Session session, ShockAbsorber filterShock) {
@@ -338,3 +299,5 @@ public class CarDao {
         return cars;
     }
 }
+
+

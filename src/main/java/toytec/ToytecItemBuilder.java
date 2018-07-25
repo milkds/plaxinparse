@@ -60,8 +60,11 @@ public class ToytecItemBuilder {
         Element stockSKUel = doc.getElementsByClass("product-info-stock-sku").first();
         Element availabilityEL = stockSKUel.getElementsByAttributeValueContaining("class", "stock available").first();
         if  (availabilityEL==null){
+            availabilityEL = stockSKUel.getElementsByAttributeValueContaining("class", "stock unavailable").first();
+        if  (availabilityEL==null){
             ToyUtil.logUnexpectedData("no availability Element", itemUrl);
             return;
+            }
         }
         String availability = availabilityEL.text();
         String backOrder = "";
@@ -80,6 +83,12 @@ public class ToytecItemBuilder {
             if (inStockSize>0){
                 backOrder = inStockEl.first().text();
             }
+            else {
+                Elements outStockEl = stockSKUel.getElementsByClass("product-availability-in-stock");
+                int outStockSize = outStockEl.size();
+                if (outStockSize>0){
+                    backOrder = outStockEl.first().text();
+                }            }
         }
         System.out.println("availability: " + availability);
         System.out.println("backOrder: " + backOrder);
@@ -99,6 +108,7 @@ public class ToytecItemBuilder {
                 case "stock available": break;
                 case "product-availability-backorder": break;
                 case "product-availability-in-stock": break;
+                case "": break;
                 default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session: "+checkEl, itemUrl);
             }
 
