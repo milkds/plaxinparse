@@ -32,7 +32,7 @@ public class ToytecItemBuilder {
         return sku;
     }
 
-    private static String getSkuFromSKUnameString(String skuText) {
+    public static String getSkuFromSKUnameString(String skuText) {
         String sku = skuText;
         if (skuText.contains("- ")){
             sku = StringUtils.substringBefore(skuText, "- ");
@@ -84,11 +84,13 @@ public class ToytecItemBuilder {
                 backOrder = inStockEl.first().text();
             }
             else {
-                Elements outStockEl = stockSKUel.getElementsByClass("product-availability-in-stock");
+                Elements outStockEl = stockSKUel.getElementsByClass("product-availability-out-of-stock");
                 int outStockSize = outStockEl.size();
                 if (outStockSize>0){
                     backOrder = outStockEl.first().text();
-                }            }
+                }
+
+            }
         }
         System.out.println("availability: " + availability);
         System.out.println("backOrder: " + backOrder);
@@ -106,8 +108,10 @@ public class ToytecItemBuilder {
             switch (checkEl){
                 case "product-info-stock-sku": break;
                 case "stock available": break;
+                case "stock unavailable": break;
                 case "product-availability-backorder": break;
                 case "product-availability-in-stock": break;
+                case "product-availability-out-of-stock": break;
                 case "": break;
                 default: ToyUtil.logUnexpectedData("unexpected class attribute in stock session: "+checkEl, itemUrl);
             }

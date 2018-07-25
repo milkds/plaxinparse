@@ -583,4 +583,16 @@ public class ToyUtil {
 
 
     }
+
+    public static List<String> getItemSKUs(WebDriver driver) {
+        List<String> itemSKUs = new ArrayList<>();
+        List<WebElement> itemElements = driver.findElements(By.cssSelector("li[class='item product product-item']"));
+        for (WebElement itemEl: itemElements){
+            WebElement nameSkuEl = itemEl.findElement(By.className("product-item-link"));
+            String nameSKUstring = nameSkuEl.getText();
+            nameSKUstring = ToytecItemBuilder.getSkuFromSKUnameString(nameSKUstring);
+            System.out.println(nameSKUstring);
+        }
+        return itemSKUs;
+    }
 }
