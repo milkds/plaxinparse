@@ -7,7 +7,6 @@ import java.util.List;
 public class TurnController {
     public static void main(String[] args) {
         testMethod();
-
     }
 
     private static void testMethod(){

@@ -256,6 +256,11 @@ public class ToyUtil {
         item.setItemLink(itemLink);
         item.setOptions(options);
 
+        try {
+            ToytecItemBuilder.getStock(item);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         return item;

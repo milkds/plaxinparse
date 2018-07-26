@@ -23,7 +23,9 @@ public class ToyController {
        // getAndSaveKits();
 
         //updateCategory();
-        parseItem();
+       // parseItem();
+
+        getItemMeta();
     }
     private static void updateCategory() throws IOException {
         WebDriver driver = ToyUtil.initDriver3("https://www.toyteclifts.com/front-lifts-coilovers/front-coilovers-and-spacers.html?product_list_limit=all&product_list_mode=list");
@@ -83,6 +85,23 @@ public class ToyController {
         System.exit(0);
     }
 
+    private static void getItemMeta(){
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<ToyItem> items = ToyTecDao.getAllItems(session);
+        int counter  = 0;
+        int total = items.size();
+        for (ToyItem item: items){
+            try {
+                ToytecItemBuilder.getMeta(item);
+            } catch (IOException e) {
+                System.out.println("item unavailable: "+item.getItemLink());
+            }
+            ToyTecDao.updateItem(item, session);
+            counter++;
+            System.out.println("updated item " + counter + " out of total " + total);
+        }
+        HibernateUtil.shutdown();
+    }
     private static void updateItemStock(){
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<ToyItem> items = ToyTecDao.getAllItems(session);

@@ -61,6 +61,12 @@ public class ToyItem {
     @Column(name = "ITEM_SUBCATEGORY")
     private String itemSubCategory;
 
+    @Column(name = "META_KEYWORDS")
+    private String metaKeywords;
+
+    @Column(name = "META_DESCRIPTION")
+    private String metaDescription;
+
 
 
     @Transient
@@ -86,6 +92,22 @@ public class ToyItem {
                 ", backOrder='" + backOrder + '\'' +
                 ", itemSubCategory='" + itemSubCategory + '\'' +
                 '}';
+    }
+
+    public String getMetaKeywords() {
+        return metaKeywords;
+    }
+
+    public void setMetaKeywords(String metaKeywords) {
+        this.metaKeywords = metaKeywords;
+    }
+
+    public String getMetaDescription() {
+        return metaDescription;
+    }
+
+    public void setMetaDescription(String metaDescription) {
+        this.metaDescription = metaDescription;
     }
 
     public String getAvailability() {

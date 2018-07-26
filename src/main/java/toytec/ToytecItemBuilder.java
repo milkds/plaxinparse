@@ -12,6 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToytecItemBuilder {
+    public static void main(String[] args) throws IOException {
+        getMeta(new ToyItem());
+    }
+
+    public static void getMeta(ToyItem item) throws IOException {
+       // Document doc = Jsoup.connect("https://www.toyteclifts.com/25001-spc-light-racing-replacement-ball-joint-pair.html").get();
+        Document doc = Jsoup.connect(item.getItemLink()).get();
+        Element metaWordsEl = doc.getElementsByAttributeValue("name", "keywords").first();
+        Element metaDescEl = doc.getElementsByAttributeValue("name", "description").first();
+        String keyWords = metaWordsEl.attr("content");
+        String description = metaDescEl.attr("content");
+
+        item.setMetaKeywords(keyWords);
+        if (description!=null&&description.length()>0){
+            item.setMetaDescription(description);
+        }
+    }
 
     public static List<String> getItemSKUsFromCategory(String categoryUrl) throws IOException {
         List<String> sku = new ArrayList<>();

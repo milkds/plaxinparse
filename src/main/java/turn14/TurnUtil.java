@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TurnUtil {
-    private static final String PRODUCT_URL = "https://www.turn14.com/search/index.php?vmmBrand=74&start=76";
+    private static final String PRODUCT_URL = "https://www.turn14.com/search/index.php?vmmBrand=74&start=126";
     private static final String PROBLEM_LOG_PATH = "src\\main\\resources\\turn14_files\\problemlog";
     public static WebDriver initDriver(){
       //  System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\chromedriver.exe");
