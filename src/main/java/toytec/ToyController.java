@@ -25,7 +25,8 @@ public class ToyController {
         //updateCategory();
        // parseItem();
 
-        getItemMeta();
+      //  getItemMeta();
+        updateItemStock();
     }
     private static void updateCategory() throws IOException {
         WebDriver driver = ToyUtil.initDriver3("https://www.toyteclifts.com/front-lifts-coilovers/front-coilovers-and-spacers.html?product_list_limit=all&product_list_mode=list");

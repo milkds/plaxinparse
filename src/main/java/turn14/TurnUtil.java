@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TurnUtil {
-    private static final String PRODUCT_URL = "https://www.turn14.com/search/index.php?vmmBrand=74&start=126";
+    private static final String PRODUCT_URL = "https://www.turn14.com/search/index.php?vmmBrand=74&start=151";
     private static final String PROBLEM_LOG_PATH = "src\\main\\resources\\turn14_files\\problemlog";
     public static WebDriver initDriver(){
       //  System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\chromedriver.exe");
@@ -72,10 +72,14 @@ public class TurnUtil {
 
     public static List<TurnPart> getPartListFromCurrentPage(WebDriver driver) {
         List<TurnPart> parts = new ArrayList<>();
-        List<WebElement> partElements = driver.findElements(By.cssSelector("div[class='panel panel-default search-container col-xs-12 bs-callout-stock ']"));
-       if(partElements.size()==0);{
+        List<WebElement> partElements =  driver.findElements(By.cssSelector("div[class='panel panel-default search-container col-xs-12 bs-callout-stock ']"));
+       /*if(partElements.size()==0);{
             partElements = driver.findElements(By.cssSelector("div[class='panel panel-default search-container col-xs-12 bs-callout-CANdropship ']"));
-        }
+        }*/
+       List<WebElement> partElements2 = driver.findElements(By.cssSelector("div[class='panel panel-default search-container col-xs-12 bs-callout-CANdropship ']"));
+       List<WebElement> partElements3 = driver.findElements(By.cssSelector("div[class='panel panel-default search-container col-xs-12 bs-callout-inactive ']"));
+      partElements.addAll(partElements2);
+      partElements.addAll(partElements3);
         for (WebElement partElement: partElements){
             TurnPart part = new TurnPart();
             setFields(part, partElement, driver);
